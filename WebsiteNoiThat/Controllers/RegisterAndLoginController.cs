@@ -1,7 +1,6 @@
 ﻿using BotDetect.Web.Mvc;
 using Models.DAO;
 using Models.EF;
-using reCAPTCHA.MVC;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -73,6 +72,7 @@ namespace WebsiteNoiThat.Controllers
         }
 
         [HttpPost]
+        [SimpleCaptchaValidation("CaptchaCode", "RegisterCaptcha", "Mã xác nhận không chính xác.")]
         public ActionResult Register(RegisterModel model)
         {
             if(ModelState.IsValid)
@@ -112,8 +112,7 @@ namespace WebsiteNoiThat.Controllers
                     }
                 }
             }
-            model = new RegisterModel();
-            return View();
+            return View(model);
         }
 
         [HttpGet]

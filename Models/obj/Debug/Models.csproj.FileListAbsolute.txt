@@ -100,3 +100,18 @@ D:\CODE CŨ\CNWebNC\NguyenThiNgoc_HTTT2\WebsiteNoiThat\Models\obj\Debug\Models.c
 D:\CODE CŨ\CNWebNC\NguyenThiNgoc_HTTT2\WebsiteNoiThat\Models\obj\Debug\Models.csproj.CopyComplete
 D:\CODE CŨ\CNWebNC\NguyenThiNgoc_HTTT2\WebsiteNoiThat\Models\obj\Debug\Models.dll
 D:\CODE CŨ\CNWebNC\NguyenThiNgoc_HTTT2\WebsiteNoiThat\Models\obj\Debug\Models.pdb
+C:\MNM_N3\N3PTPMMNM\Models\bin\Debug\Models.dll.config
+C:\MNM_N3\N3PTPMMNM\Models\bin\Debug\Models.dll
+C:\MNM_N3\N3PTPMMNM\Models\bin\Debug\Models.pdb
+C:\MNM_N3\N3PTPMMNM\Models\bin\Debug\EntityFramework.dll
+C:\MNM_N3\N3PTPMMNM\Models\bin\Debug\EntityFramework.SqlServer.dll
+C:\MNM_N3\N3PTPMMNM\Models\bin\Debug\EntityFramework.xml
+C:\MNM_N3\N3PTPMMNM\Models\bin\Debug\EntityFramework.SqlServer.xml
+C:\MNM_N3\N3PTPMMNM\Models\obj\Debug\Models.csproj.AssemblyReference.cache
+C:\MNM_N3\N3PTPMMNM\Models\obj\Debug\Interop.SCRIPTOSYSLib.dll
+C:\MNM_N3\N3PTPMMNM\Models\obj\Debug\Interop.ScriptSigner.dll
+C:\MNM_N3\N3PTPMMNM\Models\obj\Debug\Models.csproj.ResolveComReference.cache
+C:\MNM_N3\N3PTPMMNM\Models\obj\Debug\Models.csproj.CoreCompileInputs.cache
+C:\MNM_N3\N3PTPMMNM\Models\obj\Debug\Models.csproj.CopyComplete
+C:\MNM_N3\N3PTPMMNM\Models\obj\Debug\Models.dll
+C:\MNM_N3\N3PTPMMNM\Models\obj\Debug\Models.pdb
