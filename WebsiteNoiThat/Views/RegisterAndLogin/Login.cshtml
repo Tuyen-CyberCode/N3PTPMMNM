@@ -1,5 +1,5 @@
-﻿@model WebsiteNoiThat.Models.LoginModel
-
+@model WebsiteNoiThat.Models.LoginModel
+@using BotDetect.Web.Mvc;
 @{
     ViewBag.Title = "Login";
     Layout = null;
@@ -56,6 +56,18 @@
                                             </div>
                                             <div class="form-group">
                                                 @Html.TextBoxFor(model => model.Password, new { @class = "form-control form-control-user", @id = "exampleInputPassword", @placeholder = "Mật khẩu", type = "password" })
+                                            </div>
+                                            <div class="form-group">
+                                                <link href="@BotDetect.Web.CaptchaUrls.Absolute.LayoutStyleSheetUrl" rel="stylesheet" type="text/css" />
+                                                @{
+                                                    MvcCaptcha loginCaptcha = new MvcCaptcha("loginCaptcha");
+                                                    loginCaptcha.UserInputID = "CaptchaCode";
+                                                }
+                                                <div style="display: flex; justify-content: center; margin-bottom: 8px;">
+                                                    @Html.Captcha(loginCaptcha)
+                                                </div>
+                                                @Html.TextBox("CaptchaCode", null, new { @class = "form-control form-control-user", @placeholder = "Nhập mã captcha", @required = "required" })
+                                                @Html.ValidationMessage("CaptchaCode", "", new { @class = "text-danger" })
                                             </div>
                                             <div class="form-group">
                                                 <div class="custom-control custom-checkbox small">
