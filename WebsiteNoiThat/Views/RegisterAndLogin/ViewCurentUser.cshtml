@@ -7,6 +7,7 @@
 
 <h2>Thông tin tài khoản</h2>
 <div>
+    <!-- Vùng thông tin: chỉ hiển thị, không cho sửa trực tiếp -->
     <fieldset disabled>
         <div class="form-row">
             <div class="form-group col-md-6">
@@ -52,7 +53,11 @@
             </div>
             <a style="margin-left: 21px;">Trạng thái kích hoạt</a>
         </div>
-        <fieldset disabled>
-            <button class="btn btn-warning"><a href="/RegisterAndLogin/EditCurentUser" style="color: inherit; text-decoration: none;">Sửa thông tin</a></button>
-            <a href="/RegisterAndLogin/ChangePassword" class="btn btn-primary" style="margin-left: 10px;">Đổi mật khẩu</a>
+    </fieldset>
+
+    <!-- Nút thao tác: nằm NGOÀI fieldset disabled để luôn bấm được -->
+    <div class="form-group" style="margin-top: 15px;">
+        <a href="/RegisterAndLogin/EditCurentUser" class="btn btn-warning">Sửa thông tin</a>
+        <a href="/RegisterAndLogin/ChangePassword" class="btn btn-primary" style="margin-left: 10px;">Đổi mật khẩu</a>
+    </div>
 </div>
