@@ -2461,6 +2461,7 @@
     <Content Include="Content\css\owl.theme.css" />
     <Content Include="Content\css\Slider.css" />
     <Content Include="Content\css\style.css" />
+    <Content Include="Content\css\smooth.css" />
     <Content Include="Content\DataTable\css\dataTables.bootstrap.css" />
     <Content Include="Content\DataTable\css\dataTables.bootstrap.min.css" />
     <Content Include="Content\DataTable\css\dataTables.bootstrap4.css" />
@@ -3093,6 +3094,7 @@
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\password-toggle.js" />
+    <Content Include="Scripts\smooth.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
