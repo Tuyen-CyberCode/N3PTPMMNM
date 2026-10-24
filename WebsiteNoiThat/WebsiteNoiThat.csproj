@@ -3094,10 +3094,6 @@
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\password-toggle.js" />
-<<<<<<< HEAD
-=======
-    <Content Include="Scripts\smooth.js" />
->>>>>>> main
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
