@@ -11,7 +11,7 @@
         @if (Model != null && Model.Order != null)
         {
             <div class="alert alert-success" style="max-width: 700px; margin: 0 auto 20px;">
-                <p><b>Mã đơn hàng:</b> #@Model.Order.OrderId</p>
+                <p><b>Mã đơn hàng:</b> #@Model.Order.OrderId — <a href="/theo-doi-don-hang?id=@Model.Order.OrderId"><i class="fa fa-map-marker"></i> Theo dõi vị trí đơn hàng</a></p>
                 <p><b>Trạng thái:</b> Đang chờ xác nhận</p>
                 <p><b>Phương thức thanh toán:</b> @Model.Order.PaymentMethod</p>
                 @if (Model.Order.PaymentMethod != null && Model.Order.PaymentMethod.Contains("Chuyển khoản"))

@@ -1,0 +1,149 @@
+@{
+    ViewBag.Title = "Theo dõi đơn hàng";
+    var m = ViewBag.Model as WebsiteNoiThat.Controllers.TrackViewModel;
+    var daTim = ViewBag.DaTraCuu == true;
+}
+
+<div class="container" style="margin-top:20px; margin-bottom:40px">
+    <h2><i class="fa fa-map-marker" style="color:#e4393c"></i> Theo dõi đơn hàng</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <form method="get" action="/theo-doi-don-hang" class="well" style="margin-bottom:26px">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                    <input type="number" min="1" step="1" name="id" class="form-control"
+                           placeholder="Nhập mã đơn hàng (VD: 123) — xem trong email hoặc trang đặt hàng thành công"
+                           value="@(m != null ? m.Data.Order.OrderId.ToString() : "")" required />
+                    <span class="input-group-btn">
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-location-arrow"></i> Xem vị trí đơn hàng</button>
+                    </span>
+                </div>
+            </form>
+
+            @if (daTim && (ViewBag.KhongTimThay == true))
+            {
+                <div class="alert alert-warning">
+                    <strong>Không tìm thấy đơn hàng nào.</strong> Bạn kiểm tra lại mã đơn hàng nhé (mã đơn là số, ví dụ 123).
+                </div>
+            }
+
+            @if (daTim && m != null)
+            {
+                var o = m.Data;
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <strong>Đơn hàng #@o.Order.OrderId</strong>
+                        <span class="label @(@o.Order.StatusId == 5 ? "label-success" : "label-info")" style="float:right">@o.StatusName</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><i class="fa fa-user"></i> <strong>Người nhận:</strong> @o.Order.ShipName</p>
+                                <p><i class="fa fa-phone"></i> <strong>Điện thoại:</strong> @o.Order.ShipPhone</p>
+                                <p><i class="fa fa-home"></i> <strong>Địa chỉ giao:</strong> @o.Order.ShipAddress</p>
+                                <p><i class="fa fa-credit-card"></i> <strong>Thanh toán:</strong> @(string.IsNullOrWhiteSpace(o.Order.PaymentMethod) ? "Tiền mặt khi nhận hàng" : o.Order.PaymentMethod) @(o.Order.UpdateDate != null ? Html.Raw("· cập nhật " + o.Order.UpdateDate.Value.ToString("dd/MM/yyyy")) : null)</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p style="font-weight:bold; text-indent:1px"><i class="fa fa-list"></i> Sản phẩm:</p>
+                                <table class="table table-condensed" style="margin-bottom:6px">
+                                    @foreach (var it in o.Items)
+                                    {
+                                        <tr>
+                                            <td>@it.ProductName</td>
+                                            <td style="white-space:nowrap">x@it.Quantity</td>
+                                            <td style="white-space:nowrap; text-align:right">@string.Format("{0:N0}", it.SubTotal)₫</td>
+                                        </tr>
+                                    }
+                                    <tr>
+                                        <td colspan="2" style="text-align:right"><strong>Tổng cộng</strong></td>
+                                        <td style="text-align:right"><strong>@string.Format("{0:N0}", o.Total)₫</strong></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <hr style="margin:8px 0 14px" />
+
+                        <div class="progress" style="height:26px; margin-bottom:6px">
+                            <div class="progress-bar progress-bar-danger progress-bar-striped active" role="progressbar"
+                                 style="width:@m.Progress%" aria-valuenow="@m.Progress">@(m.Progress)%</div>
+                        </div>
+
+                        <div id="bang-leo" style="height:380px; border:1px solid #ddd; border-radius:4px"></div>
+                        <p style="color:#999; font-size:12px; margin-top:6px">
+                            <i class="fa fa-info-circle"></i>
+                            Vị trí chấm <span style="color:#e4393c">🚚</span> là ước lượng minh họa theo tiến trình đơn hàng (@o.StatusName), không phải vị trí GPS thật của nhân viên giao hàng.
+                        </p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@if (daTim && m != null)
+{
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script type="text/javascript">
+        // Dữ liệu server gửi xuống trang
+        window.__track = {
+            shopLat: @m.ShopLat.ToString(System.Globalization.CultureInfo.InvariantCulture),
+            shopLng: @m.ShopLng.ToString(System.Globalization.CultureInfo.InvariantCulture),
+            cusLat: @(m.CusLat.HasValue ? m.CusLat.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "null"),
+            cusLng: @(m.CusLng.HasValue ? m.CusLng.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "null"),
+            progress: @m.Progress
+        };
+
+        window.addEventListener('load', function () {
+            try {
+                var d = window.__track;
+                var map = L.map('bang-leo').setView([d.shopLat, d.shopLng], 11);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '&copy; OpenStreetMap'
+                }).addTo(map);
+
+                var diemCuaHang = L.latLng(d.shopLat, d.shopLng);
+                L.circleMarker(diemCuaHang, { color: '#2f4f8f', fillColor: '#2f4f8f', fillOpacity: 1, radius: 7 })
+                 .addTo(map).bindPopup('<strong>Điểm xuất phát</strong><br>Showroom / kho của cửa hàng');
+
+                var diemKhach = null;
+                if (d.cusLat != null && d.cusLng != null) {
+                    diemKhach = L.latLng(d.cusLat, d.cusLng);
+                    L.circleMarker(diemKhach, { color: '#111', fillColor: '#f5a623', fillOpacity: 1, radius: 7 })
+                     .addTo(map).bindPopup('<strong>Nơi giao hàng</strong><br>Địa chỉ bạn đã nhập');
+                } else {
+                    diemKhach = diemCuaHang; // không định vị được: bỏ qua phần chỉ đường
+                }
+
+                var route = L.polyline([diemCuaHang, diemKhach], { color: '#e4393c', weight: 3, dashArray: '6 8', opacity: .8 })
+                            .addTo(map);
+
+                // Vị trí đơn hàng = đi được (progress/100) của toàn tuyến
+                var t = Math.max(0, Math.min(1, d.progress / 100));
+                var la = diemCuaHang.lat + (diemKhach.lat - diemCuaHang.lat) * t;
+                var ln = diemCuaHang.lng + (diemKhach.lng - diemCuaHang.lng) * t;
+                var truck = L.circleMarker([la, ln], { color: '#111', fillColor: '#e4393c', fillOpacity: 1, radius: 9 })
+                             .addTo(map).bindPopup('Vị trí đơn hàng ước lượng: ' + Math.round(d.progress) + '% quãng đường');
+
+                // Gom khung nhìn sao cho thấy đủ 2 điểm
+                try {
+                    var khung = route.getBounds();
+                    if (khung && khung.isValid()) {
+                        map.fitBounds(khung, { padding: [35, 35] });
+                    } else {
+                        map.setView(diemCuaHang, 12);
+                    }
+                } catch (e2) {
+                    map.setView(diemCuaHang, 12);
+                }
+            } catch (e) {
+                var el = document.getElementById('bang-leo');
+                if (el) el.innerHTML = '<div style="padding:16px">Không tải được bản đồ — kiểm tra kết nối internet.</div>';
+            }
+        });
+    </script>
+}

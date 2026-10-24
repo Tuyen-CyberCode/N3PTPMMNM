@@ -99,6 +99,12 @@ namespace WebsiteNoiThat
               namespaces: new[] { "WebsiteNoiThat.Controllers" }
           );
             routes.MapRoute(
+              name: "TrackOrder",
+              url: "theo-doi-don-hang",
+              defaults: new { controller = "Order", action = "Track", id = UrlParameter.Optional },
+              namespaces: new[] { "WebsiteNoiThat.Controllers" }
+          );
+            routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional },
