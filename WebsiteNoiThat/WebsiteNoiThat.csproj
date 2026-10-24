@@ -183,6 +183,7 @@
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\NewsController.cs" />
+    <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\RegisterAndLoginController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
@@ -3131,6 +3132,7 @@
     <Content Include="Views\Product\Search.cshtml" />
     <Content Include="Views\RegisterAndLogin\Register.cshtml" />
     <Content Include="Views\Contact\Lookup.cshtml" />
+    <Content Include="Views\Order\Track.cshtml" />
     <Content Include="Views\Contact\Contacts.cshtml" />
     <Content Include="Views\RegisterAndLogin\Login.cshtml" />
     <Content Include="Views\Cart\Success.cshtml" />
