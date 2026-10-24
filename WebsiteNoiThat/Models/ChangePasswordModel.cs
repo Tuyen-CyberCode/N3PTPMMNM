@@ -11,7 +11,7 @@ namespace WebsiteNoiThat.Models
 
         [Display(Name = "Mật khẩu mới")]
         [Required(ErrorMessage = "Vui lòng nhập mật khẩu mới")]
-        [StringLength(32, MinimumLength = 4, ErrorMessage = "Độ dài mật khẩu ít nhất 4 ký tự.")]
+        [StringLength(32, MinimumLength = 6, ErrorMessage = "Độ dài mật khẩu tối thiểu 6 ký tự.")]
         [DataType(DataType.Password)]
         public string NewPassword { get; set; }
 

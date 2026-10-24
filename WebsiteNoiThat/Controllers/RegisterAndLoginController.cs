@@ -485,6 +485,11 @@ namespace WebsiteNoiThat.Controllers
                 return RedirectToAction("Login", "RegisterAndLogin");
             }
 
+            if (TempData["Success"] != null)
+            {
+                ViewBag.Success = TempData["Success"];
+            }
+
             return View();
         }
 
@@ -526,8 +531,8 @@ namespace WebsiteNoiThat.Controllers
             user.Password = Encryptor.MD5Hash(model.NewPassword);
             db.SaveChanges();
 
-            TempData["Success"] = "Đổi mật khẩu thành công!";
-            return RedirectToAction("Index", "Home");
+            TempData["Success"] = "Đổi mật khẩu thành công! Từ giờ hãy dùng mật khẩu mới cho lần đăng nhập tiếp theo.";
+            return RedirectToAction("ChangePassword");
         }
 
         // ==================== 7. THẺ TÍCH ĐIỂM ====================
