@@ -1,0 +1,148 @@
+/* ============================================================
+   smooth.css – Tùy chỉnh giao diện mượt (issue #20)
+   Bổ sung chuyển động nhẹ nhàng cho site khách hàng.
+   Tôn trọng người dùng "prefers-reduced-motion": tự tắt hiệu ứng
+   ============================================================ */
+
+:root {
+    --fx-fast: .18s;
+    --fx-mid: .28s;
+    --fx-ease: cubic-bezier(.25, .7, .3, 1);
+}
+
+/* Cuộn trang mượt khi bấm link neo (back-to-top, menu…) */
+html {
+    scroll-behavior: smooth;
+}
+
+/* --- Link & nút: chuyển màu mềm --- */
+a,
+.btn {
+    transition: color var(--fx-fast) var(--fx-ease),
+                background-color var(--fx-fast) var(--fx-ease),
+                border-color var(--fx-fast) var(--fx-ease),
+                box-shadow var(--fx-fast) var(--fx-ease),
+                transform var(--fx-fast) var(--fx-ease);
+}
+
+.btn:focus,
+a:focus {
+    outline: none;
+}
+
+/* Link được thêm hiệu ứng nhấn nhẹ tự nhiên */
+a:active {
+    transform: translateY(1px) scale(.99);
+}
+
+/* --- Thẻ sản phẩm (.boxsp): nổi nhẹ lên khi rê chuột --- */
+.boxsp {
+    transition: transform var(--fx-mid) var(--fx-ease),
+                box-shadow var(--fx-mid) var(--fx-ease);
+    will-change: transform;
+}
+
+.boxsp:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .10);
+}
+
+/* Ảnh sản phẩm: phóng rất nhẹ, về lại mượt */
+.imgsp img {
+    transition: transform .45s var(--fx-ease), opacity var(--fx-mid) var(--fx-ease);
+    will-change: transform;
+}
+
+.boxsp:hover .imgsp img {
+    transform: scale(1.06);
+}
+
+/* --- Dropdown menu: mở ra mềm mại thay vì hiện đột ngột --- */
+.navbar .dropdown-menu,
+.dropdown-menu {
+    display: block;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: opacity var(--fx-fast) var(--fx-ease),
+                transform var(--fx-fast) var(--fx-ease),
+                visibility 0s linear var(--fx-fast);
+    pointer-events: none;
+}
+
+.navbar .open > .dropdown-menu,
+.open > .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition-delay: 0s;
+    pointer-events: auto;
+}
+
+/* --- Hiệu ứng xuất hiện khi cuộn tới (JS thêm .fx-in) --- */
+.fx-reveal {
+    opacity: 0;
+    transform: translateY(18px);
+}
+
+.fx-in {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    transition: opacity .6s var(--fx-ease),
+                transform .6s var(--fx-ease);
+}
+
+/* --- Nút "Về đầu trang" --- */
+#backtotop {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 999;
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, .55);
+    color: #fff;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: opacity var(--fx-mid) var(--fx-ease),
+                transform var(--fx-mid) var(--fx-ease),
+                visibility 0s linear var(--fx-mid),
+                background-color var(--fx-fast) var(--fx-ease);
+}
+
+#backtotop.hien {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition-delay: 0s;
+}
+
+#backtotop:hover {
+    background: rgba(0, 0, 0, .75);
+}
+
+/* --- Người dùng chọn giảm chuyển động: tắt hết hiệu ứng --- */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+
+    .fx-reveal {
+        opacity: 1;
+        transform: none;
+    }
+}
