@@ -73,6 +73,11 @@ namespace WebsiteNoiThat.Areas.Admin.Controllers
                 }
                 else
                 {
+                    if (UploadImage == null || UploadImage.ContentLength == 0)
+                    {
+                        ModelState.AddModelError("Photo", "Vui lòng chọn ảnh cho sản phẩm.");
+                        return View();
+                    }
                     var fileName = Path.GetFileName(UploadImage.FileName);
                     var path = Path.Combine(Server.MapPath("~/image"), fileName);
                     UploadImage.SaveAs(path);
@@ -103,7 +108,7 @@ namespace WebsiteNoiThat.Areas.Admin.Controllers
             }
             else
             {
-                ModelState.AddModelError("ErrorDate", "Ngày kết thúc phải muộn hơn ngày bắt đầu.");
+                ModelState.AddModelError("", "Vui lòng kiểm tra lại thông tin nhập. Ảnh và các trường bắt buộc không được để trống.");
                 return View();
 
             }

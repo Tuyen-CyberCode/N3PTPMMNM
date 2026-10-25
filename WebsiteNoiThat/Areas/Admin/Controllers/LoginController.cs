@@ -69,7 +69,9 @@ namespace WebsiteNoiThat.Areas.Admin.Controllers
             Session[Commoncontent.user_sesion_admin] = null;
             Session[Commoncontent.SESSION_CREDENTIALS] = null;
            FormsAuthentication.SignOut();
-            return RedirectToAction("Index","Login");
+
+            // Dang xuat -> ve trang dang nhap khach hang (dang nhap admin tu day se tu tro ve khu quan ly)
+            return Redirect("/dang-nhap");
         }
 
         // ==================== QUÊN MẬT KHẨU QUẢN TRỊ (issue #74) ====================
