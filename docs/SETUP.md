@@ -142,3 +142,41 @@ Chờ nhóm thống nhất rồi mới đưa thành PR.
 Gặp thêm lỗi mới? Hãy **tạo Issue** trên GitHub với đầy đủ:
 tên lỗi (screenshot), config file / stack trace liên quan, và các bước đã thử —
 nhóm sẽ cập nhật vào tài liệu này.
+
+---
+
+## 5. Tài khoản quản trị mặc định (Admin)
+
+Khu quản trị nằm tại `/Admin` (ví dụ: `http://localhost:5899/Admin`). Sau khi khôi phục database
+theo Bước 2, hệ thống chuẩn bị sẵn một tài khoản quản trị:
+
+| Thông số | Giá trị |
+|---|---|
+| Đường đăng nhập | `/Admin/Login` |
+| Tên đăng nhập | `admin` |
+| Mật khẩu | `admin` (đã lưu dạng MD5 trong bảng `User`) |
+| Nhóm quyền | `ADMIN` — được toàn bộ quy cập: quản lý sản phẩm, danh mục, nhà cung cấp, tin tức, đơn hàng, người dùng |
+
+**Đăng nhập xong cần làm ngay:** vào *Quản trị → Người dùng → Sửa* tài khoản `admin` để đổi mật khẩu
+(mật khẩu hiện tại được hash MD5 chỉ để chạy demo / chấm điểm; trình độ bảo mật MD5 không dùng cho môi trường production).
+
+### Tạo lại tài khoản admin nếu database của bạn chưa có
+
+Script `SQL/2026-10-25_them_tai_khoan_admin.sql` tạo đầy đủ (an toàn chạy nhiều lần — chỉ chèn khi thiếu):
+
+```bash
+sqlcmd -S . -E -d DBNoiThat -f 65001 -i SQL\2026-10-25_them_tai_khoan_admin.sql
+```
+
+Script này chèn: nhóm `ADMIN / MOD / USER`, toàn bộ 27 quyền, gán quyền theo bảng `Credentials`,
+và tài khoản `admin` nếu chưa tồn tại. Cả nhóm admin/mod đều cần dữ liệu này.
+
+### Thêm / sửa sản phẩm ở khu quản trị
+
+Vào `/Admin/Product/Show` → bấm nút **Thêm** (hoặc đi thẳng `/Admin/Product/Add`):
+
+1. Nhập tên, chọn danh mục + nhà cung cấp, đơn giá, số lượng, mô tả.
+2. **Bắt buộc chọn ảnh** sẽ tải từ máy lên thư mục `image/` của site.
+3. Nếu thiếu ảnh → trang hiển thị "Vui lòng chọn ảnh cho sản phẩm" thay vì lỗi 500 như trước.
+
+> Lưu ý: cột `ProductId` do database tự sinh (IDENTITY) — trang thêm sản phẩm không cần nhập mã.

@@ -43,7 +43,8 @@ namespace WebsiteNoiThat.Models
         public string ProviderName { get; set; }
 
         [DisplayName("Ảnh")]
-        [Required]
+        // Bỏ [Required]: ảnh được upload qua HttpPostedFileBase, không phải field form.
+        // Giữ [Required] ở đây khiến ModelState luôn invalid -> "Thêm sản phẩm" không bao giờ lưu được (issue #95).
         public string Photo { get; set; }
 
         [DisplayName("Ngày bắt đầu KM")]

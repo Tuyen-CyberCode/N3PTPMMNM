@@ -64,6 +64,11 @@ namespace WebsiteNoiThat.Controllers
         {
             Session[Commoncontent.user_sesion] = null;
             Session[Commoncontent.CartSession] = null;
+
+            // Nếu là Admin đăng nhập từ trang khách -> xóa luôn phiên quản trị để không còn quyền truy cập /Admin sau khi đăng xuất
+            Session[Commoncontent.user_sesion_admin] = null;
+            Session[Commoncontent.SESSION_CREDENTIALS] = null;
+
             return Redirect("/");
         }
 
@@ -96,6 +101,23 @@ namespace WebsiteNoiThat.Controllers
                     userSession.Username = user.Username;
                     userSession.UserId = user.UserId;
                     Session.Add(Commoncontent.user_sesion, userSession);
+
+                    // Tài khoản Admin đăng nhập từ trang khách -> vào thẳng khu quản lý,
+                    // khách hàng thường -> về trang chủ mua hàng (issue #95)
+                    if (user.GroupId == CommonConstant.ADMIN_GROUP)
+                    {
+                        var adminSession = new UserLogin();
+                        adminSession.Username = user.Username;
+                        adminSession.UserId = user.UserId;
+                        adminSession.GroupId = user.GroupId;
+
+                        var listCredentials = dao.GetListCredentials(user.Username);
+                        Session.Add(Commoncontent.SESSION_CREDENTIALS, listCredentials);
+                        Session.Add(Commoncontent.user_sesion_admin, adminSession);
+
+                        return Redirect("/Admin");
+                    }
+
                     return Redirect("/");
                 }
                 else if (result == -1)

@@ -71,7 +71,11 @@ a:active {
 }
 
 .navbar .open > .dropdown-menu,
-.open > .dropdown-menu {
+.open > .dropdown-menu,
+.navbar .show > .dropdown-menu,
+.open > .show,
+.show > .dropdown-menu,
+.dropdown-menu.show {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
