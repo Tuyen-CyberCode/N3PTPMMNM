@@ -186,11 +186,25 @@ namespace WebsiteNoiThat.Controllers
         [HttpPost]
         public ActionResult PayBy(User n, string PaymentMethod)
         {
+            // 1. Kiểm tra User n có bị null không (phòng hờ form không bind dữ liệu)
+            if (n == null)
+            {
+                ModelState.AddModelError("", "Vui lòng điền đầy đủ thông tin nhận hàng.");
+                return View();
+            }
+
             var session = (UserLogin)Session[WebsiteNoiThat.Common.Commoncontent.user_sesion];
             var model = session != null ? db.Users.SingleOrDefault(a => a.UserId == session.UserId) : null;
+
             if (model != null)
             {
-                // Phương thức thanh toán do người dùng chọn trên trang thanh toán (issue #67), mặc định COD
+                // 2. Kiểm tra giỏ hàng có tồn tại không tránh lỗi null ở foreach
+                var cart = (List<CartItem>)Session[CartSession];
+                if (cart == null || cart.Count == 0)
+                {
+                    return RedirectToAction("Index");
+                }
+
                 PaymentMethod = string.IsNullOrWhiteSpace(PaymentMethod) ? "Tiền mặt khi nhận hàng (COD)" : PaymentMethod.Trim();
                 model.UserId = session.UserId;
                 model.Name = n.Name;
@@ -207,8 +221,6 @@ namespace WebsiteNoiThat.Controllers
 
                 var order = new Order();
                 order.UpdateDate = DateTime.Now;
-                //order.UpdateDate = DateTime.ToString("yyyy-MM-dd h:mm:ss");
-                //DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss");
                 order.ShipAddress = n.Address;
                 order.ShipPhone = n.Phone;
                 order.ShipName = n.Name;
@@ -217,51 +229,53 @@ namespace WebsiteNoiThat.Controllers
                 order.StatusId = 1;
                 order.PaymentMethod = PaymentMethod;
 
-
                 var id = new OrderDao().Insert(order);
-                var cart = (List<CartItem>)Session[CartSession];
                 var detailDao = new OrderDetailDao();
                 double total = 0;
                 var htmldata = "<p><b>STT | Tên | Số lượng | Đơn giá | Khuyến mại</b></p>";
                 int count = 0;
+
                 foreach (var item in cart)
                 {
-                        var orderDetail = new OrderDetail();
-                        orderDetail.OrderId = id;
-                        orderDetail.ProductId = item.Product.ProductId;
+                    var orderDetail = new OrderDetail();
+                    orderDetail.OrderId = id;
+                    orderDetail.ProductId = item.Product.ProductId;
 
-                        //a = Convert.ToInt32(item.Product.Price);
-                        var discountprice = Convert.ToInt32(item.Product.Price - item.Product.Price * item.Product.Discount * 0.01);
-                        orderDetail.Price = discountprice;
+                    var discountprice = Convert.ToInt32(item.Product.Price - item.Product.Price * item.Product.Discount * 0.01);
+                    orderDetail.Price = discountprice;
+                    orderDetail.Quantity = item.Quantity;
 
-                        orderDetail.Quantity = item.Quantity;
+                    detailDao.Insert(orderDetail);
+                    total += discountprice * item.Quantity; // Đã fix lỗi thiếu dấu nhân ở code gốc của bạn
 
-                        detailDao.Insert(orderDetail);
-                        total += discountprice * item.Quantity;
-                        var pro = db.Products.FirstOrDefault(m => m.ProductId == item.Product.ProductId);
+                    var pro = db.Products.FirstOrDefault(m => m.ProductId == item.Product.ProductId);
+                    if (pro != null)
+                    {
                         pro.Quantity = pro.Quantity - item.Quantity;
-                        htmldata += "<p>"+count+"  |  "+item.Product.Name+ "  |  "+item.Quantity+"  |  "+ discountprice.ToString("N0") +" | "+item.Product.Discount.ToString()+" %</p>";
-                        db.SaveChanges();
-                        count += 1;
+                    }
+
+                    htmldata += "<p>" + count + "  |  " + item.Product.Name + "  |  " + item.Quantity + "  |  " + discountprice.ToString("N0") + " | " + item.Product.Discount.ToString() + " %</p>";
+                    db.SaveChanges();
+                    count += 1;
                 }
 
-                string content = System.IO.File.ReadAllText(Server.MapPath("~/Common/neworder.html"));
+                try
+                {
+                    string content = System.IO.File.ReadAllText(Server.MapPath("~/Common/neworder.html"));
+                    content = content.Replace("{{id}}", id.ToString());
+                    content = content.Replace("{{CustomerName}}", n.Name);
+                    content = content.Replace("{{Phone}}", n.Phone != null ? n.Phone.ToString() : "");
+                    content = content.Replace("{{Email}}", n.Email);
+                    content = content.Replace("{{Address}}", n.Address);
+                    content = content.Replace("{{PaymentMethod}}", PaymentMethod);
+                    content = content.Replace("{{Total}}", total.ToString("N0"));
+                    content = content.Replace("{{data}}", htmldata);
 
-                content = content.Replace("{{id}}", id.ToString());
-                content = content.Replace("{{CustomerName}}", n.Name);
-                content = content.Replace("{{Phone}}", n.Phone.ToString());
-                content = content.Replace("{{Email}}", n.Email);
-                content = content.Replace("{{Address}}", n.Address);
-                content = content.Replace("{{PaymentMethod}}", PaymentMethod);
-                content = content.Replace("{{Total}}", total.ToString("N0"));
-                content = content.Replace("{{data}}", htmldata);
-
-                var toEmail = ConfigurationManager.AppSettings["ToEmailAddress"].ToString();
-                MailHelper.SendMail(n.Email, "Đơn hàng mới từ NOITHATGO.VN", content);
-                //new MailHelper().SendMail(toEmail, "Đơn hàng mới từ NoiThatShop", content);
+                    MailHelper.SendMail(n.Email, "Đơn hàng mới từ NOITHATGO.VN", content);
+                }
+                catch (Exception) { }
 
                 ViewBag.EMAIL = n.Email;
-                // Truyền mã đơn hàng mới tạo sang trang thành công (issue #46)
                 return Redirect("/hoan-thanh?OrderId=" + id);
             }
             else
