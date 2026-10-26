@@ -65,6 +65,33 @@ namespace Models.DAO
             view.Total = view.Items.Sum(x => x.Price * x.Quantity);
             return view;
         }
+        // Danh sách đơn hàng của một user cho trang "Đơn hàng của tôi" (issue #98)
+        public List<TrackOrderView> ListByUser(int userId)
+        {
+            var statusName = db.Status.ToDictionary(s => s.StatusId, s => s.Name);
+            var orderIds = db.Orders.Where(o => o.UserId == userId)
+                                    .Select(o => o.OrderId).ToList();
+            var totals = db.OrderDetails
+                           .Where(d => d.OrderId != null && orderIds.Contains(d.OrderId.Value))
+                           .GroupBy(d => d.OrderId.Value)
+                           .ToDictionary(g => g.Key, g => g.Sum(x => (x.Price ?? 0) * (x.Quantity ?? 0)));
+            var orders = db.Orders.Where(o => o.UserId == userId)
+                                  .OrderByDescending(o => o.OrderId).ToList();
+            return orders.Select(o =>
+            {
+                var ten = statusName.ContainsKey(o.StatusId)
+                            ? statusName[o.StatusId]
+                            : ("Trạng thái " + o.StatusId);
+                var tong = totals.ContainsKey(o.OrderId) ? totals[o.OrderId] : 0;
+                return new TrackOrderView
+                {
+                    Order = o,
+                    StatusName = ten,
+                    Items = new List<TrackOrderItem>(),
+                    Total = tong
+                };
+            }).ToList();
+        }
     }
 
     // Dữ liệu hiển thị trang theo dõi đơn hàng (issue #68)

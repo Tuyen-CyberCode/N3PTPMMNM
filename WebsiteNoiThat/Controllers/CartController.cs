@@ -284,6 +284,18 @@ namespace WebsiteNoiThat.Controllers
             }
         }
 
+        /// Trang "Đơn hàng của tôi" cho khách đã đăng nhập (issue #98)
+        public ActionResult MyOrders()
+        {
+            var session = (UserLogin)Session[WebsiteNoiThat.Common.Commoncontent.user_sesion];
+            if (session == null)
+            {
+                return Redirect("/dang-nhap");
+            }
+            var model = new OrderDao().ListByUser(session.UserId);
+            return View(model);
+        }
+
         public ActionResult HistoryCart(int? page)
         {
             int pagenumber = (page ?? 1);
