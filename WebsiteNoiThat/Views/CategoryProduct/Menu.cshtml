@@ -1,31 +1,34 @@
 ﻿@model List<Models.EF.Category>
-@*<ul class="mnboxl">
-    @foreach (var item in Model.Where(n => n.ParId==0))
-    {
-        var child = Model.Where(n => n.ParId == item.CategoryId);
-        var childparent = child.Count() > 0;
-        <li>
-            <a href="/san-pham/@item.CategoryId"@childparent>@item.Name</a>
-            @if (child.Count() > 0)
-            {
-                <i class="fa fa-angle-right" aria-hidden="true"></i>
-                <ul class="mnboxl_1">
-                    @foreach (var children in child)
-                    {
-                        <li><a href="/san-pham/@children.CategoryId">@children.Name</a></li>
-                    }
-                </ul>
-            }
-        </li>
+
+<style>
+    /* DANH MỤC ▾: hiển thị danh mục con bên trong menu thả xuống */
+    .dropdown-menu .dropdown-chus {
+        padding-left: 38px;
+        font-size: 13px;
+        color: #777;
     }
-</ul>*@
+
+    .dropdown-menu .fa-caret-right {
+        color: #bbb;
+        font-size: 12px;
+        margin-left: 4px;
+    }
+</style>
 
 <div class="dropdown-menu" aria-labelledby="dropdown_category">
     @foreach (var item in Model.Where(n => n.ParId == 0))
     {
-        var child = Model.Where(n => n.ParId == item.CategoryId);
-        var childparent = child.Count() > 0;
-        <a class="dropdown-item" href="/danh-muc/@item.CategoryId" @childparent style="font-weight:normal">@item.Name</a>
+        var children = Model.Where(n => n.ParId == item.CategoryId).ToList();
+        var coCon = children.Count > 0;
+        <a class="dropdown-item" href="/danh-muc/@item.CategoryId" style="font-weight:600">
+            @item.Name @if (coCon)
+            {
+                <i class="fa fa-caret-right" aria-hidden="true"></i>
+            }
+        </a>
+        foreach (var sub in children)
+        {
+            <a class="dropdown-item dropdown-chus" href="/danh-muc/@sub.CategoryId">@sub.Name</a>
+        }
     }
-
 </div>
