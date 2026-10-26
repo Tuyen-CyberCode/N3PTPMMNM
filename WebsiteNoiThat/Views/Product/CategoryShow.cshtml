@@ -7,6 +7,35 @@
 
 @section Noidungmenu{
     <h3 id="title_spmoi" style="text-align:center;">@category.Name.ToUpper()</h3>
+
+    @* Thanh sắp xếp + lọc (issue #99) *@
+    <form method="get" action="/danh-muc/@category.CategoryId"
+          style="margin-bottom:14px; padding:10px 12px; background-color:#f9f9f9; border:1px solid #eee; border-radius:4px">
+        <div class="row" style="margin:0">
+            <div class="col-md-5" style="padding:0">
+                <label style="font-weight:normal; margin-right:6px">Sắp xếp theo:</label>
+                <select name="sort" style="width:220px; display:inline-block; height:32px; border:1px solid #ccc; border-radius:3px; padding:0 6px">
+                    <option value="0" @(ViewBag.Sort == 0 ? "selected" : "")>Mặc định</option>
+                    <option value="1" @(ViewBag.Sort == 1 ? "selected" : "")>Giá tăng dần</option>
+                    <option value="2" @(ViewBag.Sort == 2 ? "selected" : "")>Giá giảm dần</option>
+                    <option value="3" @(ViewBag.Sort == 3 ? "selected" : "")>Tên A - Z</option>
+                    <option value="4" @(ViewBag.Sort == 4 ? "selected" : "")>Mới nhất</option>
+                </select>
+            </div>
+            <div class="col-md-4" style="padding:0">
+                <label style="font-weight:normal; margin:0">
+                    <input type="checkbox" name="conhang" value="true" @(ViewBag.Conhang == true ? "checked" : "")
+                           style="vertical-align:-2px; margin-right:4px" /> Chỉ còn hàng
+                </label>
+            </div>
+            <div class="col-md-3" style="padding:0; text-align:right">
+                <button type="submit" class="btn btn-danger btn-sm" style="padding:6px 16px">
+                    <i class="fa fa-filter"></i> Áp dụng
+                </button>
+            </div>
+        </div>
+    </form>
+
     <div class="ct-boxmain row m0">
         @{ int i = 0;
             foreach (var sp in Model)
@@ -73,13 +102,15 @@
     int currentpage = ((int)ViewBag.Page);
     var startpage = Math.Max(1, currentpage - pagedisplay / 2);
     var endpage = Math.Min(total, currentpage + pagedisplay / 2);
-    var link = "/san-pham/" + category.CategoryId;
+    // issue #99: dùng route danh-muc (đường dẫn /san-pham/ cũ không có route -> 404) và giữ trạng thái sắp xếp/lọc khi chuyển trang
+    var link = "/danh-muc/" + category.CategoryId + "?sort=" + ViewBag.Sort + "&conhang=" + (ViewBag.Conhang == true ? "true" : "false");
+    Func<int, string> linkPage = p => link + "&page=" + p;
     <nav>
         <ul class="pagination">
             @if (currentpage > ViewBag.First)
             {
-                <li><a href="@link?page=@ViewBag.First" title="Trang đầu" class="first"><i class="fa fa-angle-double-left"></i>Trang đầu</a></li>
-                <li><a href="@link?page=@ViewBag.Prev" title="Trang trước" class="prev"><i class="fa fa-angle-left"></i></a></li>
+                <li><a href="@linkPage((int)ViewBag.First)" title="Trang đầu" class="first"><i class="fa fa-angle-double-left"></i>Trang đầu</a></li>
+                <li><a href="@linkPage((int)ViewBag.Prev)" title="Trang trước" class="prev"><i class="fa fa-angle-left"></i></a></li>
 
             }
 
@@ -87,18 +118,18 @@
             {
                 if (currentpage == j)
                 {
-                    <li><a href="@link?page=@j" class="active" title="Trang @j">@j</a></li>
+                    <li><a href="@linkPage(j)" class="active" title="Trang @j">@j</a></li>
                 }
                 else
                 {
-                    <li><a href="@link?page=@j" class="pos" title="Trang @j">@j</a></li>
+                    <li><a href="@linkPage(j)" class="pos" title="Trang @j">@j</a></li>
                 }
 
             }
             @if (currentpage < total)
             {
-                <li>  <a href="@link?page=@ViewBag.Next" title="Trang sau" class="next"><i class="fa fa-angle-right"></i></a></li>
-                <li><a href="@link?page=@ViewBag.Last" title="Trang cuối" class="last"><i class="fa fa-angle-double-right"></i>Trang cuối</a></li>
+                <li>  <a href="@linkPage((int)ViewBag.Next)" title="Trang sau" class="next"><i class="fa fa-angle-right"></i></a></li>
+                <li><a href="@linkPage((int)ViewBag.Last)" title="Trang cuối" class="last"><i class="fa fa-angle-double-right"></i>Trang cuối</a></li>
             }
 
         </ul>
