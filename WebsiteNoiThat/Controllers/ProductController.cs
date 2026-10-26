@@ -102,12 +102,14 @@ namespace WebsiteNoiThat.Controllers
         }
 
         //in ra theo danh mục sản phẩm
-        public ActionResult CategoryShow(int cateId, int page = 1, int pagesize = 16)
+        public ActionResult CategoryShow(int cateId, int page = 1, int pagesize = 16, int sort = 0, bool conhang = false)
         {
             var category = new CategoryDao().ViewDetail(cateId);
             ViewBag.CategoryShow = category;
+            ViewBag.Sort = sort;
+            ViewBag.Conhang = conhang;
             int total = 0;
-            var model = new ProductDao().ListByCategoryId(cateId, ref total,page, pagesize);
+            var model = new ProductDao().ListByCategoryId(cateId, ref total,page, pagesize, sort, conhang);
             ViewBag.Total = total;
             ViewBag.Page = page;
             int maxpage = 10;

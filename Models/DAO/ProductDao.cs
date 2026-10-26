@@ -72,10 +72,36 @@ namespace Models.DAO
 
         //in ra loai san pham
 
-        public List<Product> ListByCategoryId(int cateId, ref int total, int pageindex = 1, int pagesize = 12)
+        public List<Product> ListByCategoryId(int cateId, ref int total, int pageindex = 1, int pagesize = 12, int sort = 0, bool onlyAvailable = false)
         {
-            total = db.Products.Where(x => x.CateId == cateId).Count();
-            var model = db.Products.Where(x => x.CateId == cateId).OrderByDescending(x => x.Price).Skip((pageindex - 1) * pagesize).Take(pagesize).ToList();
+            // issue #99: hỗ trợ sắp xếp + lọc "chỉ còn hàng"; giữ hành vi cũ khi không truyền tham số
+            var query = db.Products.AsQueryable();
+            if (onlyAvailable)
+            {
+                query = query.Where(x => (x.Quantity ?? 0) > 0);
+            }
+            total = query.Where(x => x.CateId == cateId).Count();
+
+            switch (sort)
+            {
+                case 1:  // giá tăng dần
+                    query = query.Where(x => x.CateId == cateId).OrderBy(x => x.Price);
+                    break;
+                case 2:  // giá giảm dần
+                    query = query.Where(x => x.CateId == cateId).OrderByDescending(x => x.Price);
+                    break;
+                case 3:  // tên A - Z
+                    query = query.Where(x => x.CateId == cateId).OrderBy(x => x.Name);
+                    break;
+                case 4:  // mới nhất
+                    query = query.Where(x => x.CateId == cateId).OrderByDescending(x => x.ProductId);
+                    break;
+                default: // giữ nguyên hành vi cũ (giá giảm dần)
+                    query = query.Where(x => x.CateId == cateId).OrderByDescending(x => x.Price);
+                    break;
+            }
+
+            var model = query.Skip((pageindex - 1) * pagesize).Take(pagesize).ToList();
             return model;
         }
         public List<string> ListName(string keyword)
