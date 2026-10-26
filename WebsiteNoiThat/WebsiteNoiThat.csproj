@@ -3135,7 +3135,8 @@
     <Content Include="Views\Order\Track.cshtml" />
     <Content Include="Views\Contact\Contacts.cshtml" />
     <Content Include="Views\RegisterAndLogin\Login.cshtml" />
-    <Content Include="Views\Cart\Success.cshtml" />
+    <Content Include="Views\Cart\MyOrders.cshtml" />
+<Content Include="Views\Cart\Success.cshtml" />
     <Content Include="Views\Cart\Index.cshtml" />
     <Content Include="Views\Shared\HeaderCart.cshtml" />
     <Content Include="Views\Shared\NotFound.cshtml" />
