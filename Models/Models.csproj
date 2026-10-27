@@ -58,6 +58,7 @@
     <Compile Include="DAO\CategoryDao.cs" />
     <Compile Include="DAO\FeedbackDao.cs" />
     <Compile Include="DAO\NewsDao.cs" />
+    <Compile Include="DAO\WishlistDao.cs" />
     <Compile Include="DAO\OrderDao.cs" />
     <Compile Include="DAO\OrderDetailDao.cs" />
     <Compile Include="DAO\ProductDao.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="EF\Status.cs" />
     <Compile Include="EF\User.cs" />
     <Compile Include="EF\UserGroup.cs" />
+    <Compile Include="EF\Wishlist.cs" />
     <Compile Include="ProductView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

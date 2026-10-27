@@ -60,6 +60,10 @@ namespace WebsiteNoiThat.Controllers
             ViewBag.Feedbacks = feedbackDao.ListByProduct(Id);
             ViewBag.AvgRate = feedbackDao.AverageRate(Id);
             ViewBag.FeedbackCount = feedbackDao.CountByProduct(Id);
+
+            // Trang thai yeu thich cua user hien tai (issue #105)
+            var wlSession = Session[WebsiteNoiThat.Common.Commoncontent.user_sesion] as WebsiteNoiThat.UserLogin;
+            ViewBag.IsFavorite = wlSession != null && new global::Models.DAO.WishlistDao().IsFavorite(wlSession.UserId, Id);
             return View(model);
 
         }

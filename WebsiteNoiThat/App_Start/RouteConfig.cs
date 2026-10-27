@@ -18,6 +18,12 @@ namespace WebsiteNoiThat
               defaults: new { controller = "Product", action = "CategoryShow", id = UrlParameter.Optional },
               namespaces: new[] { "WebsiteNoiThat.Controllers" }
           );
+            routes.MapRoute(
+              name: "Wishlist",
+              url: "danh-sach-yeu-thich",
+              defaults: new { controller = "Wishlist", action = "Index" },
+              namespaces: new[] { "WebsiteNoiThat.Controllers" }
+          );
             routes.IgnoreRoute("{*botdetect}",
            new { botdetect = @"(.*)BotDetectCaptcha\.ashx" });
             routes.MapRoute(

@@ -187,6 +187,7 @@
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\RegisterAndLoginController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
+    <Compile Include="Controllers\WishlistController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -3136,6 +3137,7 @@
     <Content Include="Views\Contact\Contacts.cshtml" />
     <Content Include="Views\RegisterAndLogin\Login.cshtml" />
     <Content Include="Views\Cart\MyOrders.cshtml" />
+    <Content Include="Views\Wishlist\Index.cshtml" />
 <Content Include="Views\Cart\Success.cshtml" />
     <Content Include="Views\Cart\Index.cshtml" />
     <Content Include="Views\Shared\HeaderCart.cshtml" />
