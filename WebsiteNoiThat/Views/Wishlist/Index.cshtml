@@ -1,0 +1,45 @@
+@model List<Models.EF.Product>
+
+<h3 id="title_spmoi" style="text-align:center;">
+    <i class="fa fa-heart" style="color:#e0393e" aria-hidden="true"></i> DANH SÁCH YÊU THÍCH
+    @if (ViewBag.Count != null && (int)ViewBag.Count > 0)
+    {
+        <span style="font-size:14px;color:#888">(@ViewBag.Count sản phẩm)</span>
+    }
+</h3>
+
+@if (Model == null || Model.Count == 0)
+{
+    <div style="text-align:center;padding:40px 0;">
+        <p><i class="fa fa-heart-o" style="font-size:48px;color:#ccc" aria-hidden="true"></i></p>
+        <p style="font-size:15px;color:#666">Bạn chưa có sản phẩm yêu thích nào.</p>
+        <p><a href="/Product/ShowProduct/" class="btn btn-primary">Xem sản phẩm</a></p>
+        <p style="font-size:13px;color:#999">Bấm nút <b style="color:#e0393e">♡ Yêu thích</b> ở trang chi tiết sản phẩm để lưu lại sản phẩm bạn muốn mua sau.</p>
+    </div>
+}
+else
+{
+    <div class="ct-boxmain row m0">
+        @foreach (var sp in Model)
+        {
+            <div class="col-xs-6 col-sm-4 col-md-3 p5">
+                <div class="boxsp">
+                    <div class="imgsp">
+                        <a href="@Url.Content("/Product/DetailProduct/" + sp.ProductId)" data-toggle="tooltip" title="@sp.Name"><img class="imgproduct" style="width:200px;height:180px;" src="@Url.Content("~/image/" + sp.Photo)"></a>
+                    </div>
+                    <div class="namesp">
+                        <a href="@Url.Content("/Product/DetailProduct/" + sp.ProductId)">@sp.Name</a>
+                    </div>
+                    <div class="pricesp">Giá: @sp.Price.GetValueOrDefault(0).ToString("N0")₫</div>
+                    <div class="button-hd">
+                        <a href="/Wishlist/Toggle/@sp.ProductId" title="Bỏ khỏi danh sách yêu thích"><i class="fa fa-heart" style="color:#e0393e" aria-hidden="true"></i></a>
+                        <a href="/them-gio-hang?ProductId=@sp.ProductId&quantity=1" title="Thêm vào giỏ hàng"><i class="fa fa-shopping-cart" aria-hidden="true"></i></a>
+                    </div>
+                    <div style="text-align:center;padding-bottom:8px;">
+                        <a href="/Wishlist/Toggle/@sp.ProductId" style="font-size:12px;color:#e0393e">♡ Bỏ yêu thích</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
