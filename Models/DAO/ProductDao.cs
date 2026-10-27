@@ -104,6 +104,25 @@ namespace Models.DAO
             var model = query.Skip((pageindex - 1) * pagesize).Take(pagesize).ToList();
             return model;
         }
+        // issue #109: san pham lien quan - cung danh muc, bo chinh no, uu tien con hang
+        public List<Product> ListRelated(int? cateId, int excludeProductId, int take = 6)
+        {
+            var query = db.Products.Where(n => n.ProductId != excludeProductId);
+            if (cateId.HasValue)
+            {
+                query = query.Where(n => n.CateId == cateId.Value);
+            }
+            var list = query.ToList();
+            list.Sort((a, b) =>
+            {
+                var conA = (a.Quantity ?? 0) > 0 ? 1 : 0;
+                var conB = (b.Quantity ?? 0) > 0 ? 1 : 0;
+                if (conA != conB) return conB - conA; // con hang truoc
+                return b.ProductId - a.ProductId;     // sp moi hon truoc
+            });
+            return list.Take(take).ToList();
+        }
+
         public List<string> ListName(string keyword)
         {
 

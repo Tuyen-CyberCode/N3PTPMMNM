@@ -61,6 +61,9 @@ namespace WebsiteNoiThat.Controllers
             ViewBag.AvgRate = feedbackDao.AverageRate(Id);
             ViewBag.FeedbackCount = feedbackDao.CountByProduct(Id);
 
+            // San pham lien quan: cung danh muc, bo chinh no (issue #109)
+            ViewBag.RelatedProducts = new ProductDao().ListRelated(model.CateId, Id);
+
             // Trang thai yeu thich cua user hien tai (issue #105)
             var wlSession = Session[WebsiteNoiThat.Common.Commoncontent.user_sesion] as WebsiteNoiThat.UserLogin;
             ViewBag.IsFavorite = wlSession != null && new global::Models.DAO.WishlistDao().IsFavorite(wlSession.UserId, Id);
