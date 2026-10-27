@@ -284,9 +284,50 @@
             </div>
 
         </div>
+        </div>
     </div>
 </div>
 
+@* San pham lien quan - cung danh muc (issue #109) *@
+@{
+    var relatedProducts = (ViewBag.RelatedProducts as List<Models.EF.Product>) ?? new List<Models.EF.Product>();
+}
+@if (relatedProducts.Count > 0)
+{
+    <section style="margin-top:35px; padding-top:25px; border-top:2px solid #eee;">
+        <h3 id="title_spmoi" style="text-align:center;">SẢN PHẨM LIÊN QUAN</h3>
+        <div style="display:flex; flex-wrap:wrap; gap:20px;">
+            @foreach (var sp in relatedProducts)
+            {
+                <div style="width:190px; text-align:center; border:1px solid #eee; border-radius:8px; padding:10px 10px 14px;">
+                    <a href="@Url.Action("DetailProduct", new { @Id = sp.ProductId })" title="@sp.Name">
+                        <img class="imgproduct zoom" style="width:168px; height:150px; object-fit:cover;" src="@Url.Content("~/image/" + sp.Photo)" alt="@sp.Name" />
+                    </a>
+                    <p style="margin:10px 0 4px; font-size:14px; min-height:36px;">
+                        <a href="@Url.Action("DetailProduct", new { @Id = sp.ProductId })">@sp.Name</a>
+                    </p>
+                    @if (sp.Discount > 0)
+                    {
+                        <div class="pricesp" style="color:crimson; font-weight:bold;">@string.Format("{0:#,###.##}", (sp.Price - (sp.Price * sp.Discount * 0.01)))₫</div>
+                        <div style="text-decoration:line-through; color:#999; font-size:12px;">@sp.Price.GetValueOrDefault(0).ToString("N0")₫</div>
+                    }
+                    else
+                    {
+                        <div class="pricesp" style="font-weight:bold;">@string.Format("{0:#,###.##}", sp.Price)₫</div>
+                    }
+                    @if ((sp.Quantity ?? 0) > 0)
+                    {
+                        <a href="/them-gio-hang?ProductId=@sp.ProductId&quantity=1" class="btn btn-success btn-xs" style="margin-top:8px;"><i class="fa fa-shopping-cart" aria-hidden="true"></i> Đặt mua</a>
+                    }
+                    else
+                    {
+                        <span class="btn btn-default btn-xs disabled" style="margin-top:8px; color:#999;">Hết hàng</span>
+                    }
+                </div>
+            }
+        </div>
+    </section>
+}
 @*<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
 <script type="text/javascript" src="https://cdn.rawgit.com/igorlino/elevatezoom-plus/1.1.6/src/jquery.ez-plus.js"></script>
 <script type="text/javascript">
