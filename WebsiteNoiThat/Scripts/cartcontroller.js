@@ -29,6 +29,9 @@
                 success: function (res) {
                     if (res.status == true) {
                         window.location.href = "/gio-hang";
+                    } else {
+                        alert(res.message || 'Không thể cập nhật số lượng.');
+                        window.location.href = "/gio-hang";
                     }
                 }
             })

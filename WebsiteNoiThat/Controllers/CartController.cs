@@ -79,6 +79,12 @@ namespace WebsiteNoiThat.Controllers
 
             if (order.StatusId == 1 || order.StatusId == 2)
             {
+                // Hoàn lại tồn kho đã trừ trước đó khi hủy sản phẩm khỏi đơn (issue #106)
+                var pro = model.ProductId != null ? db.Products.Find(model.ProductId.Value) : null;
+                if (pro != null)
+                {
+                    pro.Quantity = (pro.Quantity ?? 0) + (model.Quantity ?? 0);
+                }
                 db.OrderDetails.Remove(model);
                 db.SaveChanges();
             }
@@ -98,7 +104,15 @@ namespace WebsiteNoiThat.Controllers
                 var jsonItem = jsonCart.SingleOrDefault(x => x.Product.ProductId == item.Product.ProductId);
                 if (jsonItem != null)
                 {
-                    item.Quantity = jsonItem.Quantity;
+                    // Kiểm tra số lượng sửa có vượt tồn kho không (issue #106)
+                    var soLuongMoi = jsonItem.Quantity < 1 ? 1 : jsonItem.Quantity;
+                    var p = db.Products.Find(item.Product.ProductId);
+                    var ton = p == null ? 0 : (p.Quantity ?? 0);
+                    if (soLuongMoi > ton)
+                    {
+                        return Json(new { status = false, message = "Sản phẩm \"" + item.Product.Name + "\" chỉ còn " + ton + " sản phẩm." });
+                    }
+                    item.Quantity = soLuongMoi;
                 }
             }
             Session[CartSession] = sessionCart;
@@ -111,6 +125,23 @@ namespace WebsiteNoiThat.Controllers
         {
             var product = new ProductDao().ViewDetail(productId);
             var cart = Session[CartSession];
+
+            // Kiểm tra tồn kho trước khi thêm vào giỏ (issue #106)
+            var listHienTai = (List<CartItem>)cart ?? new List<CartItem>();
+            var trongGio = listHienTai.Where(x => x.Product.ProductId == productId).Sum(x => x.Quantity);
+            var conLai = product.Quantity ?? 0;
+            if (quantity <= 0) quantity = 1;
+            if (conLai <= 0)
+            {
+                TempData["CanhBaoHang"] = "Sản phẩm \"" + product.Name + "\" đã hết hàng.";
+                return RedirectToAction("Index");
+            }
+            if (trongGio + quantity > conLai)
+            {
+                TempData["CanhBaoHang"] = string.Format("Sản phẩm \"{0}\" chỉ còn {1} sản phẩm (bạn đang có {2} trong giỏ).", product.Name, conLai, trongGio);
+                return RedirectToAction("Index");
+            }
+
             if (cart != null)
             {
                 var list = (List<CartItem>)cart;
@@ -205,6 +236,23 @@ namespace WebsiteNoiThat.Controllers
                     return RedirectToAction("Index");
                 }
 
+                // Kiểm tra tồn kho từng sản phẩm trước khi chốt đơn (issue #106)
+                var hetHang = new List<string>();
+                foreach (var item in cart)
+                {
+                    var pTontai = db.Products.Find(item.Product.ProductId);
+                    var tonKyLucNay = pTontai == null ? 0 : (pTontai.Quantity ?? 0);
+                    if (tonKyLucNay < item.Quantity)
+                    {
+                        hetHang.Add(item.Product.Name + " (còn " + tonKyLucNay + ")");
+                    }
+                }
+                if (hetHang.Count > 0)
+                {
+                    TempData["CanhBaoHang"] = "Không thể đặt hàng — tồn kho đã thay đổi: " + string.Join("; ", hetHang) + ".";
+                    return RedirectToAction("Index");
+                }
+
                 PaymentMethod = string.IsNullOrWhiteSpace(PaymentMethod) ? "Tiền mặt khi nhận hàng (COD)" : PaymentMethod.Trim();
                 model.UserId = session.UserId;
                 model.Name = n.Name;
@@ -251,7 +299,7 @@ namespace WebsiteNoiThat.Controllers
                     var pro = db.Products.FirstOrDefault(m => m.ProductId == item.Product.ProductId);
                     if (pro != null)
                     {
-                        pro.Quantity = pro.Quantity - item.Quantity;
+                        pro.Quantity = Math.Max(0, (pro.Quantity ?? 0) - item.Quantity);
                     }
 
                     htmldata += "<p>" + count + "  |  " + item.Product.Name + "  |  " + item.Quantity + "  |  " + discountprice.ToString("N0") + " | " + item.Product.Discount.ToString() + " %</p>";
