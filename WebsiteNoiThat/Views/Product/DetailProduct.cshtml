@@ -1,4 +1,4 @@
-﻿
+
 
 @model  Models.EF.Product
 
@@ -6,6 +6,36 @@
 <style>
     .zoom{transition:transform .2s;}
     .zoom:hover{transform: scale(1.1);}
+    /* Bao dam bang chi tiet va tab luon hien thi, khong bi fx-reveal lam mo */
+    .chitietsp,
+    .short-des,
+    .tab-content {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+    /* Bo xam cho khung san pham lien quan (issue #109) */
+    #related-products,
+    #related-products * {
+        opacity: 1 !important;
+        filter: none !important;
+    }
+    #related-products .sp-card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 10px 10px 14px;
+        width: 190px;
+        text-align: center;
+        background: #fff;
+    }
+    #related-products .sp-card .het-hang {
+        display: inline-block;
+        margin-top: 8px;
+        font-size: 12px;
+        color: #999;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 2px 8px;
+    }
 </style>
 @section Noidungbenphai{
     <table class="chitietsp">
@@ -294,12 +324,12 @@
 }
 @if (relatedProducts.Count > 0)
 {
-    <section style="margin-top:35px; padding-top:25px; border-top:2px solid #eee;">
+    <section id="related-products" style="margin-top:35px; padding-top:25px; border-top:2px solid #eee;">
         <h3 id="title_spmoi" style="text-align:center;">SẢN PHẨM LIÊN QUAN</h3>
         <div style="display:flex; flex-wrap:wrap; gap:20px;">
             @foreach (var sp in relatedProducts)
             {
-                <div style="width:190px; text-align:center; border:1px solid #eee; border-radius:8px; padding:10px 10px 14px;">
+                <div class="sp-card">
                     <a href="@Url.Action("DetailProduct", new { @Id = sp.ProductId })" title="@sp.Name">
                         <img class="imgproduct zoom" style="width:168px; height:150px; object-fit:cover;" src="@Url.Content("~/image/" + sp.Photo)" alt="@sp.Name" />
                     </a>
@@ -321,7 +351,7 @@
                     }
                     else
                     {
-                        <span class="btn btn-default btn-xs disabled" style="margin-top:8px; color:#999;">Hết hàng</span>
+                        <span class="het-hang">Hết hàng</span>
                     }
                 </div>
             }
