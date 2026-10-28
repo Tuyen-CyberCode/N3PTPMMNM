@@ -4,6 +4,7 @@ $ErrorActionPreference = "Stop"
 Get-Process -Name iisexpress -ErrorAction SilentlyContinue | Stop-Process -Force
 
 $iis = "C:\Program Files\IIS Express\iisexpress.exe"
+$adminCmd = "C:\Program Files\IIS Express\IisExpressAdminCmd.exe"
 $sitePath = Join-Path $PSScriptRoot "WebsiteNoiThat"
 $httpsPort = 44373
 $httpPort = 58473
@@ -13,7 +14,27 @@ if (-not (Test-Path $iis)) {
     throw "Khong tim thay IIS Express tai: $iis"
 }
 
-# Uu tien dung file config chuan cua project (.vs)
+# 1. Tu dong dong bo chung chi SSL neu bi lech Hash (nguyen nhan gay ERR_CONNECTION_RESET)
+$cert = Get-ChildItem Cert:\LocalMachine\My -ErrorAction SilentlyContinue | Where-Object { $_.Subject -like '*localhost*' -and $_.FriendlyName -like '*IIS Express*' } | Select-Object -First 1
+if ($cert) {
+    $currentThumbprint = $cert.Thumbprint
+    $regPath = "HKLM:\SYSTEM\CurrentControlSet\Services\HTTP\Parameters\SslBindingInfo\0.0.0.0:$httpsPort"
+    $boundHash = ""
+    if (Test-Path $regPath) {
+        $bytes = (Get-ItemProperty $regPath -ErrorAction SilentlyContinue).SslCertHash
+        if ($bytes) {
+            $boundHash = ($bytes | ForEach-Object { "{0:X2}" -f $_ }) -join ""
+        }
+    }
+
+    if ($boundHash -ne $currentThumbprint -and (Test-Path $adminCmd)) {
+        Write-Host "Phat hien chung chi SSL bi lech Hash (gay ra ERR_CONNECTION_RESET)." -ForegroundColor Yellow
+        Write-Host "Dang mo hop thoai yeu cau cap nhat SSL cong $httpsPort..." -ForegroundColor Cyan
+        Start-Process -FilePath $adminCmd -ArgumentList "setupsslUrl -url:https://localhost:$httpsPort/ -CertHash:$currentThumbprint" -Verb RunAs -Wait
+    }
+}
+
+# 2. Uu tien dung file config chuan cua project (.vs)
 if (Test-Path $vsConfig) {
     $config = $vsConfig
 } else {
