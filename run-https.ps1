@@ -48,6 +48,11 @@ if (Test-Path $vsConfig) {
     $site = $xml.SelectSingleNode("//site")
     $site.SetAttribute("name", "WebsiteNoiThat")
 
+    $app = $site.SelectSingleNode("application")
+    if ($app) {
+        $app.SetAttribute("applicationPool", "Clr4IntegratedAppPool")
+    }
+
     $vd = $xml.SelectSingleNode("//virtualDirectory")
     $vd.SetAttribute("physicalPath", $sitePath)
 
