@@ -140,7 +140,6 @@ namespace WebsiteNoiThat.Common
                 try
                 {
                     SaveMailToFile(toEmailAddress, subject, content);
-                    LastSentViaDevFallback = true; // mail chỉ lưu ra file (chưa thật sự đến người dùng)
                     return true; // Đã "gửi" qua kênh file trong môi trường dev
                 }
                 catch (Exception fileEx)
