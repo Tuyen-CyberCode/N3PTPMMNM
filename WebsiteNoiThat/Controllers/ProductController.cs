@@ -46,29 +46,39 @@ namespace WebsiteNoiThat.Controllers
             var model = new ProductDao().NewProduct();
             return PartialView(model);
         }
-       
-        public ActionResult DetailProduct(int Id)
+
+        public ActionResult DetailProduct(int? Id) // Đã đổi int thành int? (nullable int)
         {
-          var model = new ProductDao().DetailsProduct(Id);
+            // Nếu không có Id truyền vào trên URL (Id == null) thì chuyển hướng hoặc báo 404 ngay
+            if (!Id.HasValue)
+            {
+                Response.StatusCode = 404;
+                Response.TrySkipIisCustomErrors = true;
+                return View("NotFound");
+            }
+
+            var productId = Id.Value;
+            var model = new ProductDao().DetailsProduct(productId);
             if (model == null)
             {
                 Response.StatusCode = 404;
                 Response.TrySkipIisCustomErrors = true;
                 return View("NotFound");
             }
+
             var feedbackDao = new FeedbackDao();
-            ViewBag.Feedbacks = feedbackDao.ListByProduct(Id);
-            ViewBag.AvgRate = feedbackDao.AverageRate(Id);
-            ViewBag.FeedbackCount = feedbackDao.CountByProduct(Id);
+            ViewBag.Feedbacks = feedbackDao.ListByProduct(productId);
+            ViewBag.AvgRate = feedbackDao.AverageRate(productId);
+            ViewBag.FeedbackCount = feedbackDao.CountByProduct(productId);
 
             // San pham lien quan: cung danh muc, bo chinh no (issue #109)
-            ViewBag.RelatedProducts = new ProductDao().ListRelated(model.CateId, Id);
+            ViewBag.RelatedProducts = new ProductDao().ListRelated(model.CateId, productId);
 
             // Trang thai yeu thich cua user hien tai (issue #105)
             var wlSession = Session[WebsiteNoiThat.Common.Commoncontent.user_sesion] as WebsiteNoiThat.UserLogin;
-            ViewBag.IsFavorite = wlSession != null && new global::Models.DAO.WishlistDao().IsFavorite(wlSession.UserId, Id);
-            return View(model);
+            ViewBag.IsFavorite = wlSession != null && new global::Models.DAO.WishlistDao().IsFavorite(wlSession.UserId, productId);
 
+            return View(model);
         }
 
         // Gui danh gia san pham (issue #76): JS goi qua ajax, ngung hoc user phai dang nhap

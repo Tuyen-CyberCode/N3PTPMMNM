@@ -63,7 +63,8 @@ namespace Models.DAO
 
         public List<Product> NewProduct()
         {
-            return db.Products.Where(n => n.Discount == 0 || n.EndDate < DateTime.Now|| n.StartDate > DateTime.Now).OrderByDescending(n=>n.StartDate).Take(8).ToList();
+            var now = DateTime.Now;
+            return db.Products.Where(n => n.Discount == 0 || n.EndDate < now || n.StartDate > now).OrderByDescending(n => n.StartDate).Take(8).ToList();
         }
         public Product DetailsProduct(int Id)
         {
