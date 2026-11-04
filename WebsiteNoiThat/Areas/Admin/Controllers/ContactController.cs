@@ -13,7 +13,7 @@ namespace WebsiteNoiThat.Areas.Admin.Controllers
         // GET: Admin/Contact
         DBNoiThat db = new DBNoiThat();
 
-        public new ActionResult Index()
+        public override ActionResult Index()
         {
             var session = (UserLogin)Session[WebsiteNoiThat.Common.Commoncontent.user_sesion_admin];
             if (session != null)
