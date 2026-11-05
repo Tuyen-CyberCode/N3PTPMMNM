@@ -13,14 +13,15 @@
             <div class="col-xs-6 col-sm-4 col-md-3 p5">
                     <div class="boxsp">
                         <div class="imgsp">
-                            <a href="@Url.Action("DetailProduct", new { @Id = sp.ProductId })" data-toggle="tooltip" title="@sp.Name"><img class="imgproduct" style="width:200px;height:160px;" src="@Url.Content("~/image/" + sp.Photo)"></a>
+                            <a href="@Url.Action("DetailProduct", new { @Id = sp.ProductId })" data-toggle="tooltip" title="@sp.DisplayName"><img class="imgproduct" style="width:200px;height:160px;" src="@Url.Content("~/image/" + sp.Photo)"></a>
                             <div class="img-label">
                                 <img src="~/image/hot.png">
                             </div>
                         </div>
                         <div class="namesp">
-                            <a href="">@sp.Name HOT</a>
+                            <a href="@Url.Action("DetailProduct", new { @Id = sp.ProductId })">@sp.DisplayName HOT</a>
                         </div>
+                        @if (sp.DisplayCode != null) { <small class="product-code">Mã SP: @sp.DisplayCode</small> }
                         <div class="pricesp">Giá: @sp.Price.GetValueOrDefault(0).ToString("N0")₫</div>
                         @{
                             if (sp.Discount > 0)
@@ -57,5 +58,4 @@
         display: inline;
     }
 </style>
-
 

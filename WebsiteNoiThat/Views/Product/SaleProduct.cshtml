@@ -1,35 +1,56 @@
 ﻿@model List<Models.EF.Product>
 
-<h3 id="title_spmoi">ĐANG KHUYẾN MÃI</h3>
-<div class="ct-boxmain row m0">
-
-    @{ int i = 0;
-        foreach (var sp in Model)
-        {
-            i++;
-            <div class="col-xs-6 col-sm-4 col-md-3 p5">
-                    <div class="boxsp">
-                        <div class="imgsp">
-                            <a href="@Url.Action("DetailProduct", new { @Id = sp.ProductId })" data-toggle="tooltip" title="@sp.Name"><img style="width:200px;height:200px;" class="imgproduct" src="@Url.Content("~/image/" + sp.Photo)"></a>
-                            <div class="img-label">
-                                <img src="~/image/sale-icon.png">
-                            </div>
-                        </div>
-                        <div class="namesp">
-                            <a href="">@sp.Name</a>
-                        </div>
-                        <div class="pricesp">Giá: @sp.Price.GetValueOrDefault(0).ToString("N0")₫</div>
-                        <div class="pricesp" style="color:crimson">Giá KM (@sp.Discount%):@string.Format("{0:#,###.##}", (sp.Price - (sp.Price * sp.Discount * 0.01)))₫</div>
-                        <div class="button-hd">
-                            <a href="/them-gio-hang?productid=@sp.ProductId&quantity=1"><i class="fa fa-shopping-cart" aria-hidden="true"></i></a>
-                        </div>
-                    </div>
-            </div>
-
-            if (i % 4 == 0)
-            {
-                <div style="clear:both;"></div>
-            }
-        }
+<style>
+    #sale-products-carousel .item {
+        padding: 5px;
     }
+
+    #sale-products-carousel .boxsp {
+        height: 100%;
+        background: #fff;
+        text-align: center;
+    }
+
+    #sale-products-carousel .imgsp img.imgproduct {
+        width: 100% !important;
+        max-width: 200px;
+        height: 200px;
+        object-fit: contain;
+    }
+
+    #sale-products-carousel .namesp,
+    #sale-products-carousel .pricesp {
+        text-align: center;
+    }
+</style>
+
+<h3 id="title_spmoi">ĐANG KHUYẾN MÃI</h3>
+<div class="row">
+    <div id="sale-products-carousel" class="owl-carousel owl-theme">
+        @foreach (var sp in Model)
+        {
+            <div class="item">
+                <div class="boxsp">
+                    <div class="imgsp">
+                        <a href="@Url.Action("DetailProduct", new { @Id = sp.ProductId })" data-toggle="tooltip" title="@sp.DisplayName">
+                            <img style="width:200px;height:200px;" class="imgproduct" src="@Url.Content("~/image/" + sp.Photo)" alt="@sp.DisplayName">
+                        </a>
+                        <div class="img-label">
+                            <img src="~/image/sale-icon.png" alt="Khuyến mãi">
+                        </div>
+
+                    </div>
+                    <div class="namesp">
+                        <a href="@Url.Action("DetailProduct", new { @Id = sp.ProductId })">@sp.DisplayName</a>
+                    </div>
+                    @if (sp.DisplayCode != null) { <small class="product-code">Mã SP: @sp.DisplayCode</small> }
+                    <div class="pricesp">Giá: @sp.Price.GetValueOrDefault(0).ToString("N0")₫</div>
+                    <div class="pricesp" style="color:crimson">Giá KM (@sp.Discount%): @string.Format("{0:#,###.##}", (sp.Price - (sp.Price * sp.Discount * 0.01)))₫</div>
+                    <div class="button-hd">
+                        <a href="/them-gio-hang?productid=@sp.ProductId&quantity=1" title="Thêm vào giỏ hàng" aria-label="Thêm @sp.DisplayName vào giỏ hàng"><i class="fa fa-shopping-cart" aria-hidden="true"></i></a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>

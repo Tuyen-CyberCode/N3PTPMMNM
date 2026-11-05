@@ -25,7 +25,8 @@
                                 </div>
                             </div>
                             <div class="namesp">
-                                <a href="">@sp.Name</a>
+                                <a href="@Url.Action("DetailProduct", new { @Id = sp.ProductId })">@sp.DisplayName</a>
+                                @if (sp.DisplayCode != null) { <small class="product-code">Mã SP: @sp.DisplayCode</small> }
                             </div>
                             <div class="pricesp">
                             <i style="color:crimson">Khuyến mãi @sp.Discount % @((sp.Price - (sp.Price * sp.Discount * 0.01)).GetValueOrDefault(0).ToString("N0"))₫</i>
@@ -45,10 +46,11 @@
                     <div class="col-xs-6 col-sm-4 col-md-3 p5">
                         <div class="boxsp">
                             <div class="imgsp">
-                                <a href="@Url.Action("DetailProduct", new { @Id = sp.ProductId }) " data-toggle="tooltip" title="@sp.Name"><img class="imgproduct" style="width:200px;height:160px;" src="@Url.Content("~/image/" + sp.Photo)"></a>
+                                <a href="@Url.Action("DetailProduct", new { @Id = sp.ProductId }) " data-toggle="tooltip" title="@sp.DisplayName"><img class="imgproduct" style="width:200px;height:160px;" src="@Url.Content("~/image/" + sp.Photo)"></a>
                             </div>
                             <div class="namesp">
-                                <a href="">@sp.Name</a>
+                                <a href="@Url.Action("DetailProduct", new { @Id = sp.ProductId })">@sp.DisplayName</a>
+                                @if (sp.DisplayCode != null) { <small class="product-code">Mã SP: @sp.DisplayCode</small> }
                             </div>
                             <div class="pricesp">@sp.Price.GetValueOrDefault(0).ToString("N0")₫</div>
                             <div class="button-hd">
@@ -77,6 +79,5 @@ Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber)/@Model.PageCo
         display: inline;
     }
 </style>
-
 
 
