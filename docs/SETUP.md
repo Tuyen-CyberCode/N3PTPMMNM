@@ -55,11 +55,11 @@ Mở file `WebsiteNoiThat/Web.config`, tìm phần `<connectionStrings>`:
 
 ```xml
 <add name="DBNoiThat"
-     connectionString="data source=SAM;initial catalog=DBNoiThat;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework"
+     connectionString="data source=.;initial catalog=DBNoiThat;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework"
      providerName="System.Data.SqlClient" />
 ```
 
-Đổi `data source=SAM` (máy của tác giả gốc) thành **SQL Server của máy bạn**:
+Connection string mặc định dùng instance SQL Server local. Nếu bạn dùng **SQL Express** hoặc một instance khác, đổi `data source=.` thành instance tương ứng:
 
 | Máy của bạn có | `data source` viết là |
 |---|---|
@@ -67,9 +67,7 @@ Mở file `WebsiteNoiThat/Web.config`, tìm phần `<connectionStrings>`:
 | SQL Server Express | `.\SQLEXPRESS` hoặc `localhost\SQLEXPRESS` |
 | Tên server khác | tên chính xác của instance |
 
-> ⚠️ **Không commit thay đổi này lên Git.** Connection string là cấu hình riêng của từng máy.
-> Hãy đưa thay đổi vào file `Web.Debug.config` (transform cục bộ) hoặc giữ ở máy mình —
-> xem mục "Lỗi thường gặp" #3 dưới đây.
+> Không commit connection string tùy chỉnh nếu nó chứa tên server hoặc thông tin riêng của máy bạn.
 
 ### Bước 4 — Build và chạy
 
@@ -102,11 +100,12 @@ IIS Express cố chạy theo đường dẫn đó → không tồn tại trên m
 
 **Triệu chứng:** exception khi mở trang chủ, call stack chỉ về các DAO (vd `ProductDao.NewProduct()`).
 
-**Nguyên nhân:** connection string trong `Web.config` trỏ tới SQL Server không tồn tại trên máy bạn
-(vd `data source=SAM`) — Entity Framework kết nối thất bại ở lần đầu khởi tạo.
+**Nguyên nhân:** connection string trỏ tới SQL Server instance không tồn tại hoặc không chạy trên máy bạn
+(ví dụ tên máy/instance cũ như `ADMIN-PC\NOITHAT`) — Entity Framework không thể mở kết nối.
 
-**Giải pháp:** làm lại **Bước 3** ở trên — sửa `data source` về SQL Server local của bạn,
-và xác nhận database `DBNoiThat` đã được khôi phục (**Bước 2**).
+**Giải pháp:** kiểm tra SQL Server service đang chạy, đặt `data source` trong **Bước 3** đúng instance,
+và xác nhận database `DBNoiThat` đã được khôi phục (**Bước 2**). Mặc định `data source=.` dùng instance
+SQL Server local; SQL Express thường dùng `.\SQLEXPRESS`.
 
 **Cách kiểm tra nhanh SQL Server của bạn đang có gì:**
 
