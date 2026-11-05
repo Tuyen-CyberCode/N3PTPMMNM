@@ -9,11 +9,12 @@
             <div class="col-xs-6 col-sm-4 col-md-3 p5">
                 <div class="boxsp">
                     <div class="imgsp">
-                        <a href="@Url.Action("DetailProduct", new { @Id = sp.ProductId })" data-toggle="tooltip" title="@sp.Name"><img style="width:200px;height:200px;" class="imgproduct" src="@Url.Content("~/image/" + sp.Photo)"></a>
+                        <a href="@Url.Action("DetailProduct", new { @Id = sp.ProductId })" data-toggle="tooltip" title="@sp.DisplayName"><img style="width:200px;height:200px;" class="imgproduct" src="@Url.Content("~/image/" + sp.Photo)"></a>
                     </div>
                     <div class="namesp">
-                        <a href="">@sp.Name</a>
+                        <a href="@Url.Action("DetailProduct", new { @Id = sp.ProductId })">@sp.DisplayName</a>
                     </div>
+                    @if (sp.DisplayCode != null) { <small class="product-code">Mã SP: @sp.DisplayCode</small> }
                     <div class="pricesp">Giá: @sp.Price.GetValueOrDefault(0).ToString("N0")₫</div>
                     <div class="button-hd">
                         <a href="/them-gio-hang?productid=@sp.ProductId&quantity=1"><i class="fa fa-shopping-cart" aria-hidden="true"></i></a>

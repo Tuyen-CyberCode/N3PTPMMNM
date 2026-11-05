@@ -25,11 +25,12 @@ else
             <div class="col-xs-6 col-sm-4 col-md-3 p5">
                 <div class="boxsp">
                     <div class="imgsp">
-                        <a href="@Url.Content("/Product/DetailProduct/" + sp.ProductId)" data-toggle="tooltip" title="@sp.Name"><img class="imgproduct" style="width:200px;height:180px;" src="@Url.Content("~/image/" + sp.Photo)"></a>
+                        <a href="@Url.Content("/Product/DetailProduct/" + sp.ProductId)" data-toggle="tooltip" title="@sp.DisplayName"><img class="imgproduct" style="width:200px;height:180px;" src="@Url.Content("~/image/" + sp.Photo)"></a>
                     </div>
                     <div class="namesp">
-                        <a href="@Url.Content("/Product/DetailProduct/" + sp.ProductId)">@sp.Name</a>
+                        <a href="@Url.Content("/Product/DetailProduct/" + sp.ProductId)">@sp.DisplayName</a>
                     </div>
+                    @if (sp.DisplayCode != null) { <small class="product-code">Mã SP: @sp.DisplayCode</small> }
                     <div class="pricesp">Giá: @sp.Price.GetValueOrDefault(0).ToString("N0")₫</div>
                     <div class="button-hd">
                         <a href="/Wishlist/Toggle/@sp.ProductId" title="Bỏ khỏi danh sách yêu thích"><i class="fa fa-heart" style="color:#e0393e" aria-hidden="true"></i></a>

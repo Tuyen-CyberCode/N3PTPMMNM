@@ -18,6 +18,29 @@
         [DisplayName("Tên sản phẩm")]
         public string Name { get; set; }
 
+        [NotMapped]
+        public string DisplayName
+        {
+            get
+            {
+                var suffix = " #" + ProductId;
+                return !string.IsNullOrEmpty(Name) && Name.EndsWith(suffix, StringComparison.Ordinal)
+                    ? Name.Substring(0, Name.Length - suffix.Length)
+                    : Name;
+            }
+        }
+
+        [NotMapped]
+        public string DisplayCode
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(Name) && Name.EndsWith(" #" + ProductId, StringComparison.Ordinal)
+                    ? "#" + ProductId
+                    : null;
+            }
+        }
+
         [DisplayName("Mô tả")]
         public string Description { get; set; }
 

@@ -49,6 +49,9 @@ sqlcmd -S . -E -Q "RESTORE DATABASE DBNoiThat FROM DISK = N'D:\duong-dan\toi\N3P
 
 > `-S .` là instance mặc định trên máy bạn. Nếu dùng SQL Express, thay bằng `-S .\SQLEXPRESS`.
 
+Sau khi khôi phục backup, chạy `SQL/2026-11-05_unique_product_names.sql` một lần trên database `DBNoiThat`.
+Script thêm mã sản phẩm vào các tên bị trùng để phân biệt sản phẩm; giao diện hiển thị tên và mã ở hai dòng riêng.
+
 ### Bước 3 — Sửa connection string cho đúng máy của bạn
 
 Mở file `WebsiteNoiThat/Web.config`, tìm phần `<connectionStrings>`:
