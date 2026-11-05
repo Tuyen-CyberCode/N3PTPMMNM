@@ -1,117 +1,213 @@
 ﻿@model Models.EF.Product
 
 <style>
-    .zoom {
-        transition: transform .2s;
+    .zoom { transition: transform .2s; }
+    .zoom:hover { transform: scale(1.04); }
+    #maincontent {
+        min-width: 0;
+        overflow-x: hidden;
+        background: transparent !important;
     }
-
-        .zoom:hover {
-            transform: scale(1.1);
-        }
-
-    #title_spmoi {
-        background-color: transparent;
-        color: #333;
-    }
-
-    /* Cố định bảng thông tin để không bị tràn khung */
-    .chitietsp {
+    .product-detail {
+        box-sizing: border-box;
         width: 100%;
-        max-width: 100%;
-        table-layout: fixed;
+        min-width: 0;
+        margin-bottom: 20px;
+        padding: 20px;
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
     }
-
-        .chitietsp td {
-            word-wrap: break-word;
-            vertical-align: top;
-            padding: 6px 8px;
+    .product-detail__title {
+        margin: 0 0 22px;
+        color: #333;
+        font-size: 24px;
+        font-weight: bold;
+        text-align: center;
+        overflow-wrap: anywhere;
+    }
+    .product-detail__main {
+        display: grid;
+        grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+        gap: 28px;
+        align-items: start;
+    }
+    .product-detail__image {
+        display: flex;
+        min-width: 0;
+        min-height: 300px;
+        align-items: center;
+        justify-content: center;
+        padding: 12px;
+        border: 1px solid #eee;
+        border-radius: 4px;
+    }
+    .product-detail__image img {
+        display: block;
+        width: 100%;
+        max-height: 420px;
+        object-fit: contain;
+    }
+    .product-detail__info {
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+        gap: 16px;
+    }
+    .product-detail__info p {
+        margin: 0;
+        line-height: 1.6;
+        overflow-wrap: anywhere;
+    }
+    .product-detail__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .product-detail__actions .btn {
+        white-space: normal;
+    }
+    .product-tabs {
+        max-width: 100%;
+        margin-right: 0;
+        margin-left: 0;
+    }
+    .product-tabs .nav-tabs {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .product-tabs .nav-tabs > li {
+        float: none;
+    }
+    .product-tabs .tab-content {
+        overflow-wrap: anywhere;
+    }
+    .product-related {
+        box-sizing: border-box;
+        width: 100%;
+        min-width: 0;
+        clear: both;
+        margin-top: 35px;
+        padding: 20px;
+        border: 1px solid #e5e5e5;
+        border-radius: 6px;
+        background: #f5f5f5;
+    }
+    .product-related .owl-item {
+        padding: 5px;
+    }
+    .product-related .imgsp img {
+        width: 150px;
+        height: 200px;
+        object-fit: contain;
+    }
+    .product-related .button-hd .is-unavailable {
+        display: inline-block;
+        width: 80%;
+        height: 30px;
+        border-radius: 3px;
+        background: #999;
+        color: #fff;
+        line-height: 30px;
+        text-align: center;
+        cursor: not-allowed;
+    }
+    .boxmain {
+        box-sizing: border-box;
+        width: 100%;
+        min-width: 0;
+        clear: both;
+        overflow: hidden;
+        background: transparent;
+    }
+    .boxmain > .row {
+        margin-right: 0;
+        margin-left: 0;
+    }
+    @@media (max-width: 767px) {
+        .product-detail {
+            padding: 14px;
         }
+        .product-detail__main {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 18px;
+        }
+        .product-detail__image {
+            min-height: 220px;
+        }
+        .product-detail__image img {
+            max-height: 340px;
+        }
+        .product-detail__title {
+            font-size: 20px;
+        }
+        .product-related {
+            padding: 14px;
+        }
+    }
 </style>
 
 @section Noidungbenphai{
-    <div style="background: #ffffff; padding: 15px; border-radius: 8px; border: 1px solid #e0e0e0; margin-bottom: 20px;">
-        <h3 id="title_spmoi" style="text-align:center; margin-top: 0; font-weight: bold;">@Model.Name.ToUpper()</h3>
-        <br />
-        <table class="chitietsp">
-            <tr>
-                <td style="width: 40%; text-align: center;" rowspan="5">
-                    <img style="max-width:100%; width:260px; height:auto; border-radius: 4px;" id="zoom_04" class="zoom" src="@Url.Content("~/image/" + Model.Photo)" alt="image" />
-                </td>
-                <td style="width: 60%;">
-                    <h3 style="margin-top:0; font-size: 18px;">Mã sản phẩm: @Model.ProductId</h3>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p class="status">Tên sản phẩm: <span class="pink" style="font-weight:600;">@Model.Name</span></p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @if (Model.Quantity > 0)
+    <section class="product-detail">
+        <h1 class="product-detail__title">@Model.Name.ToUpper()</h1>
+        <div class="product-detail__main">
+            <div class="product-detail__image">
+                <img id="zoom_04" class="zoom" src="@Url.Content("~/image/" + Model.Photo)" alt="@Model.Name" />
+            </div>
+            <div class="product-detail__info">
+                <p><strong>Mã sản phẩm:</strong> @Model.ProductId</p>
+                <p class="status">Tên sản phẩm: <span class="pink" style="font-weight:600;">@Model.Name</span></p>
+                @if (Model.Quantity > 0)
+                {
+                    <p class="status">Tình trạng: <span class="pink" style="color:#28a745;font-weight:600;">còn @Model.Quantity sản phẩm</span></p>
+                }
+                else
+                {
+                    <p class="status">Tình trạng: <span class="pink" style="color:#d9534f;font-weight:600;">Hết hàng</span></p>
+                }
+                <div>
+                    <p class="status">Giá gốc: <span class="pink" style="text-decoration:line-through;color:#999;">@string.Format("{0:#,###.##}", Model.Price)₫</span></p>
+                    @if (Model.Discount > 0)
                     {
-                        <p class="status">Tình trạng: <span class="pink" style="color: #28a745; font-weight: 600;">còn @Model.Quantity sản phẩm</span></p>
+                        <p class="status">Giá KM (@Model.Discount%): <span class="pink" style="color:#e0393e;font-weight:bold;font-size:16px;">@string.Format("{0:#,###.##}", (Model.Price - (Model.Price * Model.Discount * 0.01)))₫</span></p>
+                    }
+                </div>
+                <p class="status">
+                    Đánh giá:
+                    @if (ViewBag.AvgRate != null)
+                    {
+                        var avg = (double)ViewBag.AvgRate;
+                        var saoDay = (int)Math.Round(avg);
+                        for (var i = 1; i <= 5; i++)
+                        {
+                            <i class="fa @(i <= saoDay ? "fa-star" : "fa-star-o")" style="color:#f5a623"></i>
+                        }
+                        <span>@avg.ToString("0.0")/5 · @ViewBag.FeedbackCount đánh giá</span>
                     }
                     else
                     {
-                        <p class="status">Tình trạng: <span class="pink" style="color: #d9534f; font-weight: 600;">Hết hàng</span></p>
+                        <span style="color:#999">Chưa có đánh giá</span>
                     }
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p class="status">Giá gốc: <span class="pink" style="text-decoration: line-through; color: #999;">@string.Format("{0:#,###.##}", Model.Price)₫</span></p>
-                    @{
-                        if (Model.Discount > 0)
-                        {
-                            <p class="status">Giá KM (@Model.Discount%): <span class="pink" style="color: #e0393e; font-weight: bold; font-size: 16px;">@string.Format("{0:#,###.##}", (Model.Price - (Model.Price * Model.Discount * 0.01)))₫</span></p>
-                        }
+                </p>
+                <div class="product-detail__actions">
+                    <a href="/them-gio-hang?productid=@Model.ProductId&quantity=1" class="btn btn-primary"><i class="fa fa-cart-plus" aria-hidden="true"></i> Đặt mua hàng</a>
+                    @if (ViewBag.IsFavorite != null && (bool)ViewBag.IsFavorite)
+                    {
+                        <a href="/Wishlist/Toggle/@Model.ProductId" class="btn btn-default" style="color:#e0393e"><i class="fa fa-heart" aria-hidden="true"></i> Đã yêu thích (bỏ)</a>
                     }
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p class="status">
-                        Đánh giá:
-                        @if (ViewBag.AvgRate != null)
-                        {
-                            var avg = (double)ViewBag.AvgRate;
-                            var saoDay = (int)Math.Round(avg);
-                            for (var i = 1; i <= 5; i++)
-                            {
-                                <i class="fa @(i <= saoDay ? "fa-star" : "fa-star-o")" style="color:#f5a623"></i>
-                            }
-                            <span>@avg.ToString("0.0")/5 · @ViewBag.FeedbackCount đánh giá</span>
-                        }
-                        else
-                        {
-                            <span style="color:#999">Chưa có đánh giá</span>
-                        }
-                    </p>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2" style="padding-top: 15px;">
-                    <div class="form-group" style="margin-bottom:0;">
-                        <a href="/them-gio-hang?productid=@Model.ProductId&quantity=1" class="btn btn-primary"><i class="fa fa-cart-plus" aria-hidden="true"></i> Đặt mua hàng</a>
-                        @if (ViewBag.IsFavorite != null && (bool)ViewBag.IsFavorite)
-                        {
-                            <a href="/Wishlist/Toggle/@Model.ProductId" class="btn btn-default" style="color:#e0393e"><i class="fa fa-heart" aria-hidden="true"></i> Đã yêu thích (bỏ)</a>
-                        }
-                        else
-                        {
-                            <a href="/Wishlist/Toggle/@Model.ProductId" class="btn btn-default"><i class="fa fa-heart-o" aria-hidden="true"></i> Yêu thích</a>
-                        }
-                    </div>
-                </td>
-            </tr>
-        </table>
-    </div>
+                    else
+                    {
+                        <a href="/Wishlist/Toggle/@Model.ProductId" class="btn btn-default"><i class="fa fa-heart-o" aria-hidden="true"></i> Yêu thích</a>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
 }
 
 <hr>
 
-<div class="row">
+<div class="row product-tabs">
     <div class="short-des col-sm-12 col-xs-12">
         <ul class="nav nav-tabs" style="font-size:17px">
             <li class="nav active"><a href="#produc-des" data-toggle="tab"> Mô tả sản phẩm</a></li>
@@ -225,35 +321,45 @@
 }
 @if (relatedProducts.Count > 0)
 {
-    <section style="margin-top:35px; padding-top:25px; border-top:2px solid #eee;">
+    <section class="product-related">
         <h3 id="title_spmoi" style="text-align:center;">SẢN PHẨM LIÊN QUAN</h3>
-        <div style="display:flex; flex-wrap:wrap; gap:20px;">
+        <div id="related-products-carousel" class="owl-carousel owl-theme">
             @foreach (var sp in relatedProducts)
             {
-                <div style="width:190px; text-align:center; border:1px solid #eee; border-radius:8px; padding:10px 10px 14px;">
-                    <a href="@Url.Action("DetailProduct", new { @Id = sp.ProductId })" title="@sp.Name">
-                        <img class="imgproduct zoom" style="width:168px; height:150px; object-fit:cover;" src="@Url.Content("~/image/" + sp.Photo)" alt="@sp.Name" />
-                    </a>
-                    <p style="margin:10px 0 4px; font-size:14px; min-height:36px;">
-                        <a href="@Url.Action("DetailProduct", new { @Id = sp.ProductId })">@sp.Name</a>
-                    </p>
-                    @if (sp.Discount > 0)
-                    {
-                        <div class="pricesp" style="color:crimson; font-weight:bold;">@string.Format("{0:#,###.##}", (sp.Price - (sp.Price * sp.Discount * 0.01)))₫</div>
-                        <div style="text-decoration:line-through; color:#999; font-size:12px;">@sp.Price.GetValueOrDefault(0).ToString("N0")₫</div>
-                    }
-                    else
-                    {
-                        <div class="pricesp" style="font-weight:bold;">@string.Format("{0:#,###.##}", sp.Price)₫</div>
-                    }
-                    @if ((sp.Quantity ?? 0) > 0)
-                    {
-                        <a href="/them-gio-hang?ProductId=@sp.ProductId&quantity=1" class="btn btn-success btn-xs" style="margin-top:8px;"><i class="fa fa-shopping-cart" aria-hidden="true"></i> Đặt mua</a>
-                    }
-                    else
-                    {
-                        <span class="btn btn-default btn-xs disabled" style="margin-top:8px; color:#999;">Hết hàng</span>
-                    }
+                <div class="item">
+                    <div class="boxsp">
+                        <div class="imgsp">
+                            <a href="@Url.Action("DetailProduct", new { @Id = sp.ProductId })" title="@sp.Name">
+                                <img class="imgproduct" src="@Url.Content("~/image/" + sp.Photo)" alt="@sp.Name" />
+                            </a>
+                        </div>
+                        <div class="namesp">
+                            <a href="@Url.Action("DetailProduct", new { @Id = sp.ProductId })">@sp.Name</a>
+                        </div>
+                        @if (sp.Discount > 0)
+                        {
+                            <div class="pricesp" style="color:crimson;">@string.Format("{0:#,###.##}", (sp.Price - (sp.Price * sp.Discount * 0.01)))₫</div>
+                            <div style="margin-top:-10px; color:#999; font-size:12px; text-decoration:line-through;">@sp.Price.GetValueOrDefault(0).ToString("N0")₫</div>
+                        }
+                        else
+                        {
+                            <div class="pricesp">@sp.Price.GetValueOrDefault(0).ToString("N0")₫</div>
+                        }
+                        <div class="button-hd">
+                            @if ((sp.Quantity ?? 0) > 0)
+                            {
+                                <a href="/them-gio-hang?productid=@sp.ProductId&quantity=1" title="Thêm vào giỏ hàng" aria-label="Thêm @sp.Name vào giỏ hàng">
+                                    <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="is-unavailable" title="Sản phẩm đã hết hàng" aria-label="Sản phẩm đã hết hàng">
+                                    <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                                </span>
+                            }
+                        </div>
+                    </div>
                 </div>
             }
         </div>
@@ -346,3 +452,22 @@
         }
     });
 </script>
+@section jsFooter{
+    <script type="text/javascript">
+        $(function () {
+            $("#related-products-carousel").owlCarousel({
+                itemsCustom: [
+                    [0, 1],
+                    [480, 2],
+                    [768, 3],
+                    [1200, 4]
+                ],
+                pagination: true,
+                navigation: false,
+                autoPlay: 3000,
+                slideSpeed: 300,
+                paginationSpeed: 400
+            });
+        });
+    </script>
+}

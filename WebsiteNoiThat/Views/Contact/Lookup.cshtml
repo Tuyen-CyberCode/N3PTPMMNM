@@ -20,6 +20,39 @@
         margin-bottom: 20px;
     }
 
+    .lookup-form__row {
+        display: flex;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .lookup-form__row .form-control {
+        min-width: 0;
+        height: 42px;
+    }
+
+    .lookup-submit {
+        display: inline-flex !important;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 42px;
+        padding: 9px 18px;
+        border: 0;
+        border-radius: 4px;
+        background: #d9534f;
+        color: #fff;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .lookup-submit:hover,
+    .lookup-submit:focus {
+        background: #c9302c;
+        color: #fff;
+    }
+
     .lookup-item {
         background: #fff;
         border: 1px solid #eee;
@@ -64,6 +97,20 @@
         border-radius: 4px;
         padding: 10px;
     }
+
+    @@media (max-width: 480px) {
+        .lookup-form {
+            padding: 16px;
+        }
+
+        .lookup-form__row {
+            flex-direction: column;
+        }
+
+        .lookup-submit {
+            width: 100%;
+        }
+    }
 </style>
 
 @section Noidungmenu{
@@ -77,13 +124,11 @@
             @using (Html.BeginForm("Lookup", "Contact", FormMethod.Post))
             {
                 @Html.AntiForgeryToken()
-                <div class="input-group">
+                <div class="lookup-form__row">
                     <input type="email" name="email" class="form-control" placeholder="Nhập email của bạn (ví dụ: ten@gmail.com)" value="@(ViewBag.Email)" required />
-                    <span class="input-group-btn">
-                        <button type="submit" class="btn btn-danger" style="background:#d9534f;border:none;">
-                            <i class="fa fa-search" aria-hidden="true"></i> Tra cứu
-                        </button>
-                    </span>
+                    <button type="submit" class="btn lookup-submit">
+                        <i class="fa fa-search" aria-hidden="true"></i> Tra cứu
+                    </button>
                 </div>
             }
         </div>
