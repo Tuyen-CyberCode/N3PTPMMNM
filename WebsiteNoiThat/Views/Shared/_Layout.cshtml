@@ -280,33 +280,41 @@
     <script type="text/javascript">
         $(document).ready(function () {
             var stt = 0;
-            starimg = $("img.slider:first").attr("stt")
-            endimg = $("img.slider:last").attr("stt")
+            var starimg = $("img.slider:first").attr("stt");
+            var endimg = $("img.slider:last").attr("stt");
 
-            $("img.slider").each(function () {
-                if ($(this).is(':visible'))
-                    stt = $(this).attr("stt");
-            });
-            $("#next").click(function () {
-                if (stt == endimg) {
-                    stt = -1;
+            function nextSlide() {
+                // Chỉ chạy slide nếu không có menu nào đang mở
+                if ($('.dropdown.show').length > 0) return; 
+
+                if (stt >= endimg) {
+                    stt = 0;
+                } else {
+                    stt++;
                 }
-                next = ++stt;
                 $("img.slider").hide();
-                $("img.slider").eq(next).show();
+                $("img.slider").eq(stt).show();
+            }
+
+            $("#next").click(function (e) {
+                e.preventDefault();
+                nextSlide();
             });
-            $("#prev").click(function () {
-                if (stt == 0) {
+
+            $("#prev").click(function (e) {
+                e.preventDefault();
+                if (stt <= 0) {
                     stt = endimg;
-                    prev = stt++;
+                } else {
+                    stt--;
                 }
-                prev = --stt;
                 $("img.slider").hide();
-                $("img.slider").eq(next).show();
+                $("img.slider").eq(stt).show();
             });
+
             setInterval(function () {
-                $("#next").click()
-            }, 2000);
+                nextSlide();
+            }, 3000);
         })
     </script>
 
@@ -381,5 +389,34 @@
     <script src="~/Scripts/smooth.js"></script>
     <script src="~/Scripts/password-toggle.js"></script>
     @RenderSection("jsFooter", required: false)
+    <script>
+        $(document).ready(function () {
+            // Fix menu dropdown: Chặn Bootstrap tự đóng và quản lý thủ công
+            $('#dropdown_category').off('click').on('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                var $parent = $(this).closest('.dropdown');
+                var $menu = $parent.find('.dropdown-menu');
+                
+                // Toggle class show
+                $parent.toggleClass('show');
+                $menu.toggleClass('show');
+            });
+
+            // Chỉ đóng menu khi click vào vùng khác trên trang
+            $(document).on('click', function (e) {
+                if (!$(e.target).closest('.dropdown').length) {
+                    $('.dropdown').removeClass('show');
+                    $('.dropdown-menu').removeClass('show');
+                }
+            });
+
+            // QUAN TRỌNG: Ngăn menu đóng khi click vào bên trong nó
+            $('.dropdown-menu').on('click', function (e) {
+                e.stopPropagation(); 
+            });
+        });
+    </script>
 </body>
 </html>
