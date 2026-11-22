@@ -41,5 +41,9 @@
 
         [DisplayName("Trạng thái tài khoản")]
         public bool Status { get; set; }
+        [StringLength(250)]
+        [DisplayName("Ảnh đại diện")]
+        public string Avatar { get; set; }
+
     }
 }
