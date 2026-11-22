@@ -190,7 +190,8 @@ namespace WebsiteNoiThat.Controllers
             if (check4 == true) ranges.Add(Tuple.Create(50000000, (int?)null));
             if (ranges.Count == 0)
             {
-                return View();
+                var allProducts = db.Products.OrderBy(n => n.Price).ToPagedList(pagenumber, pagesize);
+                return View(allProducts);
             }
 
             // Ghép các khoảng bằng điều kiện HOẶC để lấy gộp sản phẩm của mọi khoảng đã tích
