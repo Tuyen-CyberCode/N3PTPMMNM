@@ -6,6 +6,11 @@
 }
 
 <h2>Thông tin tài khoản</h2>
+<div class="form-group" style="margin-bottom: 20px; text-align: left;">
+    <label>Ảnh đại diện</label><br />
+    <img src="@(string.IsNullOrEmpty(Model.Avatar) ? "/Content/client/assets/img/round-account-button-with-user-inside.png" : "/image/" + Model.Avatar)" 
+         style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd; display: block;" />
+</div>
 <div>
     <!-- Vùng thông tin: chỉ hiển thị, không cho sửa trực tiếp -->
     <fieldset disabled>
