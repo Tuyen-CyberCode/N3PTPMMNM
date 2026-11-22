@@ -41,8 +41,10 @@
 
         [DisplayName("Trạng thái tài khoản")]
         public bool Status { get; set; }
+
         [StringLength(250)]
         [DisplayName("Ảnh đại diện")]
+        [NotMapped] // Đánh dấu để EF bỏ qua nếu cột chưa tồn tại trong DB
         public string Avatar { get; set; }
 
     }
