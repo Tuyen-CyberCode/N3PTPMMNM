@@ -304,26 +304,19 @@
 </div>
 
 <script type="text/javascript">
-    window.addEventListener('load', function () {
+    $(document).ready(function () {
+        // 1. Dọn dẹp: Để Bootstrap tự xử lý tab (không dùng click handler đè lên)
+        // Bootstrap 4 data-toggle="tab" đã hoạt động tốt nếu không có JS can thiệp sai.
+        
+        // 2. Xử lý sự kiện sao
         var stars = document.querySelectorAll('.fb-star');
         var rateInput = document.getElementById('fb-rate');
         var note = document.getElementById('fb-note');
-        if (!stars.length || !rateInput) {
-            if (window.location.hash === '#tab-dg') {
-                var link0 = document.querySelector('a[href="#tab-dg"]');
-                try { if (link0) { window.jQuery(link0).tab('show'); } } catch (e) { }
-            }
-            return;
-        }
-
+        
         function paint(rate) {
             for (var i = 0; i < stars.length; i++) {
                 var r = parseInt(stars[i].getAttribute('data-rate'), 10);
                 stars[i].className = 'fa ' + (r <= rate ? 'fa-star' : 'fa-star-o') + ' fb-star';
-                stars[i].style.color = '#f5a623';
-                stars[i].style.fontSize = '22px';
-                stars[i].style.cursor = 'pointer';
-                stars[i].style.marginRight = '4px';
             }
             rateInput.value = rate;
             var label = document.getElementById('fb-rate-text');
@@ -336,47 +329,31 @@
             });
         }
 
-        if (window.location.hash === '#tab-dg') {
-            var link = document.querySelector('a[href="#tab-dg"]');
-            try { if (link) { window.jQuery(link).tab('show'); } } catch (e) { }
-            var target = document.getElementById('tab-dg');
-            if (target) target.scrollIntoView({ block: 'start' });
-        }
-
+        // 3. Xử lý gửi đánh giá không cần load lại trang
         var btn = document.getElementById('fb-send');
         if (btn) {
             btn.addEventListener('click', function () {
                 var rate = parseInt(rateInput.value, 10) || 0;
                 var content = document.getElementById('fb-content').value.trim();
                 if (rate < 1 || !content) {
-                    note.textContent = 'Bạn cần chọn số sao và viết nội dung đánh giá.';
+                    note.textContent = 'Bạn cần chọn số sao và viết nội dung.';
                     note.style.color = '#d9534f';
                     return;
                 }
-                if (note) { note.textContent = 'Đang gửi...'; note.style.color = '#999'; }
-                window.jQuery.post('/Product/AddFeedback', {
+                
+                note.textContent = 'Đang gửi...';
+                $.post('/Product/AddFeedback', {
                     productId: '@Model.ProductId',
                     rate: rate,
                     content: content
                 })
                 .done(function (res) {
                     if (res && res.success) {
-                        window.location.href = window.location.pathname + '#tab-dg';
-                        window.location.reload();
-                    } else if (res && res.error === 'login') {
-                        note.textContent = 'Bạn cần đăng nhập để đánh giá.';
-                        note.style.color = '#d9534f';
-                    } else if (res && res.error === 'data') {
-                        note.textContent = 'Dữ liệu chưa hợp lệ (sao 1-5, nội dung tối đa 500 ký tự).';
-                        note.style.color = '#d9534f';
+                        alert("Đánh giá của bạn đã được gửi!");
+                        location.reload();
                     } else {
-                        note.textContent = 'Không gửi được đánh giá, vui lòng thử lại sau.';
-                        note.style.color = '#d9534f';
+                        note.textContent = 'Gửi thất bại, vui lòng thử lại.';
                     }
-                })
-                .fail(function () {
-                    note.textContent = 'Lỗi kết nối, vui lòng thử lại sau.';
-                    note.style.color = '#d9534f';
                 });
             });
         }
