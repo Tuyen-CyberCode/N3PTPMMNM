@@ -41,6 +41,7 @@
                 <th scope="col">Mã sản phẩm</th>
                 <th scope="col">Tên sản phẩm</th>
                 <th scope="col">Số lượng</th>
+                <th scope="col">Thành tiền</th>
                 <th scope="col">Giá (đã KM nếu có)</th>
             </tr>
         </thead>
@@ -52,13 +53,14 @@
                     <td scope="row">@p.ProductId</td>
                     <td>@p.ProductName</td>
                     <td>@p.Quantity</td>
-                    <td>@p.Price₫</td>
+                    <td>@(p.Price.GetValueOrDefault(0).ToString("N0"))₫</td>
+                     <td>@((p.Price * p.Quantity).GetValueOrDefault(0).ToString("N0"))₫</td>
                 </tr>
             }
                 <tr>
             </tbody>
         </table>
-        <a>Tổng tiền thanh toán:<span style="font-weight:bold; color:crimson;">@ViewBag.total.ToString("N0") ₫</span></a>
+        <a>Tổng tiền thanh toán:<span style="font-weight:bold; color:crimson;"> @(((double?)ViewBag.total ?? 0).ToString("N0")) ₫</span></a>
     </div>
     </div>
     <br />
