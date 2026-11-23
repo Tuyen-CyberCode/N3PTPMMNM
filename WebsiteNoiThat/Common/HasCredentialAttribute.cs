@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using WebsiteNoiThat.Common;
+using Models.EF;
+using Models.DAO;
 
 namespace WebsiteNoiThat.Common
 {
@@ -17,12 +19,34 @@ namespace WebsiteNoiThat.Common
                 var session = (WebsiteNoiThat.UserLogin)HttpContext.Current.Session[Common.Commoncontent.user_sesion_admin];
                 if (session == null)
                 {
+                    var clientSession = (WebsiteNoiThat.UserLogin)HttpContext.Current.Session[Common.Commoncontent.user_sesion];
+                    if (clientSession != null)
+                    {
+                        using (var db = new DBNoiThat())
+                        {
+                            var user = db.Users.Find(clientSession.UserId);
+                            if (user != null && user.GroupId != "USER")
+                            {
+                                session = new UserLogin
+                                {
+                                    UserId = user.UserId,
+                                    Username = user.Username,
+                                    GroupId = user.GroupId
+                                };
+                                HttpContext.Current.Session[Common.Commoncontent.user_sesion_admin] = session;
+                            }
+                        }
+                    }
+                }
+
+                if (session == null)
+                {
                     return false;
                 }
 
-                List<string> privilegeLevels = this.GetCredentialByLoggedInUser(session.Username); // Call another method to get rights of the user from DB
-
-                if (privilegeLevels.Contains(this.RoleId) || session.GroupId == CommonConstant.ADMIN_GROUP)
+                List<string> privilegeLevels = this.GetCredentialByLoggedInUser(session.Username);
+                bool isProductAction = this.RoleId != null && this.RoleId.IndexOf("PRODUCT", StringComparison.OrdinalIgnoreCase) >= 0;
+                if (session.GroupId == CommonConstant.ADMIN_GROUP || (isProductAction && (session.GroupId == CommonConstant.ADMIN_GROUP || session.GroupId == CommonConstant.MOD_GROUP)) || (privilegeLevels != null && privilegeLevels.Contains(this.RoleId)))
                 {
                     return true;
                 }
@@ -41,7 +65,20 @@ namespace WebsiteNoiThat.Common
             private List<string> GetCredentialByLoggedInUser(string userName)
             {
                 var credentials = (List<string>)HttpContext.Current.Session[Common.Commoncontent.SESSION_CREDENTIALS];
-                return credentials;
+                if (credentials == null && !string.IsNullOrEmpty(userName))
+                {
+                    try
+                    {
+                        var dao = new UserDao();
+                        credentials = dao.GetListCredentials(userName);
+                        HttpContext.Current.Session[Common.Commoncontent.SESSION_CREDENTIALS] = credentials;
+                    }
+                    catch
+                    {
+                        credentials = new List<string>();
+                    }
+                }
+                return credentials ?? new List<string>();
             }
         }
     }
