@@ -375,10 +375,9 @@ namespace WebsiteNoiThat.Controllers
             return View(model.ToPagedList(pagenumber, pagesize));
 
         }
-
-        /// Thông tin trang "Đặt hàng thành công" (issue #46)
         public class OrderSuccessDetail
         {
+            public int? ProductId { get; set; }
             public string Name { get; set; }
             public string Photo { get; set; }
             public int? Quantity { get; set; }
@@ -416,6 +415,7 @@ namespace WebsiteNoiThat.Controllers
                         .Where(d => d.OrderId == order.OrderId)
                         .Join(db.Products, d => d.ProductId, p => p.ProductId, (d, p) => new
                         {
+                            d.ProductId,
                             d.Quantity,
                             d.Price,
                             p.Name,
@@ -424,6 +424,7 @@ namespace WebsiteNoiThat.Controllers
                         }).ToList()
                         .Select(d => new OrderSuccessDetail
                         {
+                            ProductId = d.ProductId,
                             Name = d.Name,
                             Photo = d.Photo,
                             Quantity = d.Quantity,
