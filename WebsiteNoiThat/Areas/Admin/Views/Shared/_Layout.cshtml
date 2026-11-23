@@ -24,6 +24,69 @@
     <!-- Custom styles for this template-->
     <link href="~/Content/admin/css/sb-admin-2.min.css" rel="stylesheet">
 
+    <style>
+        /* Đảm bảo sidebar và content wrapper chiếm trọn chiều cao màn hình */
+        body, html {
+            height: 100%;
+            margin: 0;
+            overflow: hidden; /* Ngăn cuộn cả trang, chỉ cuộn bên trong content */
+        }
+
+        #wrapper {
+            display: flex;
+            height: 100vh; /* Giữ wrapper bằng chiều cao màn hình */
+            width: 100%;
+        }
+
+        #accordionSidebar {
+            flex: 0 0 18rem !important;
+            width: 18rem !important;
+            height: 100%; /* Đảm bảo sidebar vừa khít */
+            overflow-y: auto;
+        }
+        
+        #content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto; /* Chỉ phần này có thanh cuộn */
+            width: calc(100% - 18rem) !important;
+        }
+
+        /* Định dạng lại font chữ và căn lề cho các mục menu */
+        #accordionSidebar .nav-item .nav-link {
+            display: flex;
+            align-items: center;
+            white-space: nowrap; /* Ngăn chữ xuống dòng */
+            padding: 1rem;
+        }
+
+        #accordionSidebar .nav-item .nav-link span {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        /* Làm cho topbar rộng hết cỡ theo content wrapper */
+        .topbar {
+            width: 100% !important;
+        }
+
+        /* Điều chỉnh container-fluid để căn giữa và bù lại margin của sidebar */
+        .container-fluid {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+            width: 100%;
+            max-width: 100%; /* Đảm bảo tận dụng tối đa không gian */
+        }
+        
+        /* Căn chỉnh các card để chúng co giãn linh hoạt hơn */
+        .row {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+    </style>
+
 </head>
 
 <body id="page-top">
@@ -66,6 +129,12 @@
                 <a class="nav-link" href="/Admin/Provider/Show">
                     <i class="fas fa-fw fa-chart-area"></i>
                     <span>Nhà cung cấp</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/Admin/Newss/Show">
+                    <i class="fas fa-fw fa-newspaper"></i>
+                    <span>Tin tức</span>
                 </a>
             </li>
 
@@ -323,7 +392,7 @@
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="mr-2 d-none d-lg-inline text-gray-600">@ViewBag.username</span>
-                                <img class="img-profile rounded-circle" src="/Content/admin/img/a.jpg">
+                                <img class="img-profile rounded-circle" src="@(string.IsNullOrEmpty(ViewBag.UserAvatar as string) ? "/Content/admin/img/a.jpg" : Url.Content("~/image/" + ViewBag.UserAvatar))">
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
