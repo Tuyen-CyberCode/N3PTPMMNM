@@ -1,7 +1,27 @@
-﻿
+﻿@using System.Linq
+@using Newtonsoft.Json
+@model WebsiteNoiThat.Areas.Admin.Models.DashboardViewModel
+
 @{
     ViewBag.Title = "Giới thiệu";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+    var statusLabels = Model.OrdersByStatus.Select(x => x.Name).ToList();
+    var statusValues = Model.OrdersByStatus.Select(x => x.Count).ToList();
+    var topLabels = Model.TopProducts.Select(x => x.Name).ToList();
+    var topValues = Model.TopProducts.Select(x => x.Quantity).ToList();
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Tổng quan</h1>
+    <a href="@Url.Action("Viewmodel", "Order", new { area = "Admin" })" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+        <i class="fas fa-chart-bar fa-sm text-white-50"></i> Xem báo cáo chi tiết
+    </a>
+</div>
+
+@if (ViewBag.DashboardError != null)
+{
+    <div class="alert alert-danger">@ViewBag.DashboardError</div>
 }
 
 <div class="d-sm-flex align-items-center justify-content-between mb-4">

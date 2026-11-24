@@ -934,6 +934,29 @@ ul.ulspmobi {
     margin-bottom: 50px;
 }
 
+/* Override: Disable hover effect for dropdown to fix clicking issue */
+.dropdown:hover > .dropdown-menu {
+    display: none !important;
+}
+
+/* Ép menu ẩn hoàn toàn khi không có class show */
+.dropdown-menu {
+    display: none !important;
+}
+
+/* Chỉ hiện menu khi cha là .dropdown có class .show */
+.dropdown.show .dropdown-menu {
+    display: block !important;
+}
+
+/* Vô hiệu hóa hiệu ứng hover mặc định của theme */
+.dropdown:hover .dropdown-menu {
+    display: none !important;
+}
+.dropdown.show > .dropdown-menu {
+    display: block !important;
+}
+
 .noidung {
     width: 600px;
 }

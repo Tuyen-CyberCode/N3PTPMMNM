@@ -1,12 +1,20 @@
 ﻿
+@model Models.EF.User
 @{
     var session = (UserLogin)Session[WebsiteNoiThat.Common.Commoncontent.user_sesion];
 }
 
 @if (session != null)
 {
+    // Sử dụng Model truyền từ Controller (đã được lấy từ DB)
+    string avatarUrl = (Model != null && !string.IsNullOrEmpty(Model.Avatar)) 
+                       ? "/image/" + Model.Avatar 
+                       : "/Content/client/assets/img/round-account-button-with-user-inside.png";
+
     <div class="dropdown account-dropdown">
-        <a id="a_account" href="/RegisterAndLogin/ViewCurentUser"><img src="~/Content/client/assets/img/round-account-button-with-user-inside.png" /></a>
+        <a id="a_account" href="/RegisterAndLogin/ViewCurentUser">
+            <img src="@avatarUrl" style="width:30px; height:30px; border-radius:50%; object-fit:cover;" />
+        </a>
         <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Mở menu tài khoản" title="@session.Username">
             <span class="sr-only">Mở menu tài khoản</span>
         </button>

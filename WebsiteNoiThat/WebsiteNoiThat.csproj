@@ -172,12 +172,15 @@
     <Compile Include="Areas\Admin\Controllers\ProviderController.cs" />
     <Compile Include="Areas\Admin\Controllers\RolesController.cs" />
     <Compile Include="Areas\Admin\Controllers\SupportChatController.cs" />
+    <Compile Include="Areas\Admin\Controllers\UserApprovalController.cs" />
     <Compile Include="Areas\Admin\Controllers\UserController.cs" />
     <Compile Include="Areas\Admin\Controllers\UserGroupsController.cs" />
+    <Compile Include="Areas\Admin\Models\DashboardViewModel.cs" />
     <Compile Include="Areas\Admin\Models\OrderProduct.cs" />
     <Compile Include="Areas\Admin\Models\OrderView.cs" />
     <Compile Include="Areas\Admin\Models\LoginModel.cs" />
     <Compile Include="Common\Commoncontent.cs" />
+    <Compile Include="Common\AdminInboxHelper.cs" />
     <Compile Include="Common\Encryptor.cs" />
     <Compile Include="Common\HasCredentialAttribute.cs" />
     <Compile Include="Common\PasswordPolicy.cs" />
@@ -3154,7 +3157,7 @@
     <Content Include="Views\RegisterAndLogin\Login.cshtml" />
     <Content Include="Views\Cart\MyOrders.cshtml" />
     <Content Include="Views\Wishlist\Index.cshtml" />
-<Content Include="Views\Cart\Success.cshtml" />
+    <Content Include="Views\Cart\Success.cshtml" />
     <Content Include="Views\Cart\Index.cshtml" />
     <Content Include="Views\Shared\HeaderCart.cshtml" />
     <Content Include="Views\Shared\NotFound.cshtml" />

@@ -1,6 +1,10 @@
 ﻿
+@using WebsiteNoiThat.Common
 @{
     Layout = null;
+
+    // Du lieu that cho chuong + hop thu tren thanh quan tri (issue #154, #157)
+    var adminInbox = AdminInboxHelper.Load();
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -19,6 +23,69 @@
 
     <!-- Custom styles for this template-->
     <link href="~/Content/admin/css/sb-admin-2.min.css" rel="stylesheet">
+
+    <style>
+        /* Đảm bảo sidebar và content wrapper chiếm trọn chiều cao màn hình */
+        body, html {
+            height: 100%;
+            margin: 0;
+            overflow: hidden; /* Ngăn cuộn cả trang, chỉ cuộn bên trong content */
+        }
+
+        #wrapper {
+            display: flex;
+            height: 100vh; /* Giữ wrapper bằng chiều cao màn hình */
+            width: 100%;
+        }
+
+        #accordionSidebar {
+            flex: 0 0 18rem !important;
+            width: 18rem !important;
+            height: 100%; /* Đảm bảo sidebar vừa khít */
+            overflow-y: auto;
+        }
+        
+        #content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto; /* Chỉ phần này có thanh cuộn */
+            width: calc(100% - 18rem) !important;
+        }
+
+        /* Định dạng lại font chữ và căn lề cho các mục menu */
+        #accordionSidebar .nav-item .nav-link {
+            display: flex;
+            align-items: center;
+            white-space: nowrap; /* Ngăn chữ xuống dòng */
+            padding: 1rem;
+        }
+
+        #accordionSidebar .nav-item .nav-link span {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        /* Làm cho topbar rộng hết cỡ theo content wrapper */
+        .topbar {
+            width: 100% !important;
+        }
+
+        /* Điều chỉnh container-fluid để căn giữa và bù lại margin của sidebar */
+        .container-fluid {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+            width: 100%;
+            max-width: 100%; /* Đảm bảo tận dụng tối đa không gian */
+        }
+        
+        /* Căn chỉnh các card để chúng co giãn linh hoạt hơn */
+        .row {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+    </style>
 
 </head>
 
@@ -64,6 +131,12 @@
                     <span>Nhà cung cấp</span>
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/Admin/Newss/Show">
+                    <i class="fas fa-fw fa-newspaper"></i>
+                    <span>Tin tức</span>
+                </a>
+            </li>
 
             <!-- Nav Item - Charts -->
             <li class="nav-item">
@@ -107,7 +180,12 @@
                     <span>Xác minh quên mật khẩu</span>
                 </a>
             </li>
-
+            <li class="nav-item">
+                <a class="nav-link" href="/Admin/UserApproval/Index">
+                    <i class="fas fa-fw fa-check-circle"></i>
+                    <span>Duyệt tài khoản mới</span>
+                </a>
+            </li>
             <!-- Nav Item - Hỗ trợ khách hàng -->
             <li class="nav-item">
                 <a class="nav-link" href="/Admin/Contact/Index">
@@ -207,108 +285,104 @@
                             </div>
                         </li>
 
-                        <!-- Nav Item - Alerts -->
+                        <!-- Nav Item - Thông báo hỗ trợ (issue #154, #157) -->
                         <li class="nav-item dropdown no-arrow mx-1">
-                            <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Thông báo hỗ trợ">
                                 <i class="fas fa-bell fa-fw"></i>
-                                <!-- Counter - Alerts -->
-                                <span class="badge badge-danger badge-counter">3+</span>
+                                @if (adminInbox.PendingCount > 0)
+                                {
+                                    <span class="badge badge-danger badge-counter">@(adminInbox.PendingCount > 9 ? "9+" : adminInbox.PendingCount.ToString())</span>
+                                }
                             </a>
-                            <!-- Dropdown - Alerts -->
+                            <!-- Dropdown - Thông báo -->
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
                                 <h6 class="dropdown-header">
-                                    Alerts Center
+                                    Thông báo hỗ trợ (@adminInbox.PendingCount đang chờ)
                                 </h6>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-primary">
-                                            <i class="fas fa-file-alt text-white"></i>
+                                @if (adminInbox.Notifications.Count == 0)
+                                {
+                                    <div class="dropdown-item text-center small text-gray-500 py-3">
+                                        <i class="fas fa-check-circle text-success mr-1"></i>Không có yêu cầu nào đang chờ xử lý.
+                                    </div>
+                                }
+                                else
+                                {
+                                    foreach (var item in adminInbox.Notifications)
+                                    {
+                                        <div class="dropdown-item d-flex align-items-center">
+                                            <div class="mr-3">
+                                                <div class="icon-circle @item.Color">
+                                                    <i class="fas @item.Icon text-white"></i>
+                                                </div>
+                                            </div>
+                                            <div class="flex-grow-1" style="min-width: 0;">
+                                                <div class="small text-gray-500">@item.TimeText · @item.Name</div>
+                                                <div class="text-truncate" style="max-width: 230px;" title="@item.Snippet">@item.Snippet</div>
+                                            </div>
+                                            <a href="@item.ReplyUrl" class="btn btn-sm btn-primary ml-2" title="Trả lời khách hàng">
+                                                <i class="fas fa-reply mr-1"></i>Trả lời
+                                            </a>
                                         </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">December 12, 2019</div>
-                                        <span class="font-weight-bold">A new monthly report is ready to download!</span>
-                                    </div>
+                                    }
+                                }
+                                <a class="dropdown-item text-center small text-gray-500" href="/Admin/SupportChat">
+                                    <i class="fas fa-comments mr-1"></i>Xem tất cả chat hỗ trợ
                                 </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-success">
-                                            <i class="fas fa-donate text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">December 7, 2019</div>
-                                        $290.29 has been deposited into your account!
-                                    </div>
+                                <a class="dropdown-item text-center small text-gray-500" href="/Admin/Contact">
+                                    <i class="fas fa-envelope mr-1"></i>Xem yêu cầu liên hệ
                                 </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-warning">
-                                            <i class="fas fa-exclamation-triangle text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">December 2, 2019</div>
-                                        Spending Alert: We've noticed unusually high spending for your account.
-                                    </div>
-                                </a>
-                                <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
                             </div>
                         </li>
 
-                        <!-- Nav Item - Messages -->
+                        <!-- Nav Item - Hộp thư hỗ trợ (issue #154, #157) -->
                         <li class="nav-item dropdown no-arrow mx-1">
-                            <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Hộp thư hỗ trợ">
                                 <i class="fas fa-envelope fa-fw"></i>
-                                <!-- Counter - Messages -->
-                                <span class="badge badge-danger badge-counter">7</span>
+                                @if (adminInbox.PendingCount > 0)
+                                {
+                                    <span class="badge badge-danger badge-counter">@(adminInbox.PendingCount > 9 ? "9+" : adminInbox.PendingCount.ToString())</span>
+                                }
                             </a>
-                            <!-- Dropdown - Messages -->
+                            <!-- Dropdown - Hộp thư -->
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="messagesDropdown">
                                 <h6 class="dropdown-header">
-                                    Message Center
+                                    Hộp thư hỗ trợ
                                 </h6>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="dropdown-list-image mr-3">
-                                        <img class="rounded-circle" src="https://source.unsplash.com/fn_BT9fwg_E/60x60" alt="">
-                                        <div class="status-indicator bg-success"></div>
+                                @if (adminInbox.Messages.Count == 0)
+                                {
+                                    <div class="dropdown-item text-center small text-gray-500 py-3">
+                                        <i class="fas fa-inbox mr-1"></i>Chưa có tin nhắn nào từ khách hàng.
                                     </div>
-                                    <div class="font-weight-bold">
-                                        <div class="text-truncate">Hi there! I am wondering if you can help me with a problem I've been having.</div>
-                                        <div class="small text-gray-500">Emily Fowler · 58m</div>
-                                    </div>
+                                }
+                                else
+                                {
+                                    foreach (var item in adminInbox.Messages)
+                                    {
+                                        <div class="dropdown-item d-flex align-items-center">
+                                            <div class="dropdown-list-image mr-3">
+                                                <div class="icon-circle @item.Color">
+                                                    <i class="fas @item.Icon text-white"></i>
+                                                </div>
+                                            </div>
+                                            <div class="flex-grow-1" style="min-width: 0;">
+                                                <div class="font-weight-bold text-truncate" style="max-width: 230px;" title="@item.Snippet">@item.Snippet</div>
+                                                <div class="small text-gray-500">
+                                                    @item.Name · @item.TimeText
+                                                    @if (item.Pending)
+                                                    {
+                                                        <span class="badge badge-warning ml-1">Chờ trả lời</span>
+                                                    }
+                                                </div>
+                                            </div>
+                                            <a href="@item.ReplyUrl" class="btn btn-sm btn-primary ml-2" title="Trả lời khách hàng">
+                                                <i class="fas fa-reply mr-1"></i>Trả lời
+                                            </a>
+                                        </div>
+                                    }
+                                }
+                                <a class="dropdown-item text-center small text-gray-500" href="/Admin/SupportChat">
+                                    <i class="fas fa-comments mr-1"></i>Xem tất cả tin nhắn
                                 </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="dropdown-list-image mr-3">
-                                        <img class="rounded-circle" src="https://source.unsplash.com/AU4VPcFN4LE/60x60" alt="">
-                                        <div class="status-indicator"></div>
-                                    </div>
-                                    <div>
-                                        <div class="text-truncate">I have the photos that you ordered last month, how would you like them sent to you?</div>
-                                        <div class="small text-gray-500">Jae Chun · 1d</div>
-                                    </div>
-                                </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="dropdown-list-image mr-3">
-                                        <img class="rounded-circle" src="https://source.unsplash.com/CS2uCrpNzJY/60x60" alt="">
-                                        <div class="status-indicator bg-warning"></div>
-                                    </div>
-                                    <div>
-                                        <div class="text-truncate">Last month's report looks great, I am very happy with the progress so far, keep up the good work!</div>
-                                        <div class="small text-gray-500">Morgan Alvarez · 2d</div>
-                                    </div>
-                                </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="dropdown-list-image mr-3">
-                                        <img class="rounded-circle" src="https://source.unsplash.com/Mv9hjnEUHR4/60x60" alt="">
-                                        <div class="status-indicator bg-success"></div>
-                                    </div>
-                                    <div>
-                                        <div class="text-truncate">Am I a good boy? The reason I ask is because someone told me that people say this to all dogs, even if they aren't good...</div>
-                                        <div class="small text-gray-500">Chicken the Dog · 2w</div>
-                                    </div>
-                                </a>
-                                <a class="dropdown-item text-center small text-gray-500" href="#">Read More Messages</a>
                             </div>
                         </li>
 
@@ -318,7 +392,7 @@
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="mr-2 d-none d-lg-inline text-gray-600">@ViewBag.username</span>
-                                <img class="img-profile rounded-circle" src="https://source.unsplash.com/6W4F62sN_yI/60x60">
+                                <img class="img-profile rounded-circle" src="@(string.IsNullOrEmpty(ViewBag.UserAvatar as string) ? "/Content/admin/img/a.jpg" : Url.Content("~/image/" + ViewBag.UserAvatar))">
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
@@ -368,7 +442,6 @@
         </div>
     </div>
     @*@RenderSection("ClientScript", false)*@
-    @RenderSection("scripts", required: false)
     <!-- Bootstrap core JavaScript-->
     <script src="~/Content/admin/vendor/jquery/jquery.min.js"></script>
     <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
@@ -382,6 +455,8 @@
     <script src="~/Content/admin/vendor/datatables/dataTables.bootstrap4.min.js"></script>
     <script src="~/Content/admin/js/demo/datatables-demo.js"></script>
     <script src="~/Scripts/password-toggle.js"></script>
+    <!-- Script rieng cua tung trang (phai dat SAU jQuery thi $ moi ton tai) -->
+    @RenderSection("scripts", required: false)
 </body>
 
 </html>

@@ -25,7 +25,8 @@
                 <table class="table" style="text-align:left">
                     <thead>
                         <tr>
-                            <th>Sản phẩm</th>
+                            <th>Mã sản phẩm</th>
+                            <th>Tên sản phẩm</th>
                             <th>Số lượng</th>
                             <th>Đơn giá</th>
                             <th>Khuyến mãi</th>
@@ -36,15 +37,16 @@
                         @foreach (var d in Model.Details)
                         {
                             <tr>
-                                <td>@d.Name</td>
+                                <td>@(d.ProductId)</td>
+                                <td>@(d.Name != null ? d.Name.Split('#')[0].Trim() : "")</td>
                                 <td>@d.Quantity</td>
                                 <td>@d.Price.GetValueOrDefault(0).ToString("N0")₫</td>
                                 <td>@d.Discount.GetValueOrDefault(0) %</td>
-                                <td>@(d.Price.GetValueOrDefault(0) * d.Quantity.GetValueOrDefault(0)).ToString("N0")₫</td>
+                                <td>@((d.Price.GetValueOrDefault(0) * d.Quantity.GetValueOrDefault(0)).ToString("N0"))₫</td>
                             </tr>
                         }
                         <tr>
-                            <td colspan="4" style="text-align:right"><b>Tổng tiền thanh toán</b></td>
+                            <td colspan="5" style="text-align:right"><b>Tổng tiền thanh toán</b></td>
                             <td><b style="color:crimson">@Model.Total.ToString("N0")₫</b></td>
                         </tr>
                     </tbody>

@@ -100,13 +100,21 @@ namespace WebsiteNoiThat.Controllers
                 if (result == 1)
                 {
                     var user = dao.GetUserForLogin(model.UserName);
+                    
+                    // Kiểm tra xác minh
+                    var verify = db.IdentityVerifications.FirstOrDefault(v => v.UserId == user.UserId);
+                    if (verify != null && verify.Status == "Pending")
+                    {
+                        ModelState.AddModelError("", "Tài khoản của bạn đang chờ Admin duyệt!");
+                        return View(model);
+                    }
+
                     var userSession = new UserLogin();
                     userSession.Username = user.Username;
                     userSession.UserId = user.UserId;
                     Session.Add(Commoncontent.user_sesion, userSession);
 
-                    // Tài khoản Admin đăng nhập từ trang khách -> vào thẳng khu quản lý,
-                    // khách hàng thường -> về trang chủ mua hàng (issue #95)
+                    // Tài khoản Admin đăng nhập từ trang khách
                     if (user.GroupId == CommonConstant.ADMIN_GROUP)
                     {
                         var adminSession = new UserLogin();
@@ -125,7 +133,7 @@ namespace WebsiteNoiThat.Controllers
                 }
                 else if (result == -1)
                 {
-                    ModelState.AddModelError("", "Tài khoản đang bị khóa, liên hệ admin.");
+                    ModelState.AddModelError("", "Khi xác nhận email, bạn cần gửi ảnh CCCD hoặc hộ chiếu để ADMIN/MOD duyệt. Chỉ tài khoản đã được duyệt có thể đặt lại mật khẩu.");
                 }
                 else if (result == 0)
                 {
@@ -357,8 +365,8 @@ namespace WebsiteNoiThat.Controllers
                 Email = registerData.Email,
                 Address = registerData.Address,
                 Name = registerData.Name,
-                GroupId = "USER",
-                Status = true // Kích hoạt sau khi xác thực email thành công
+                GroupId = registerData.UserType ?? "USER",
+                Status = false
             };
 
             var result = dao.Insert(user);
@@ -856,7 +864,7 @@ namespace WebsiteNoiThat.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EditCurentUser([Bind(Include = "UserId,Name,Address,Phone,Username,Email,GroupId,Status")] User user)
+        public ActionResult EditCurentUser(User user, HttpPostedFileBase UploadAvatar, bool? DeleteAvatar)
         {
             var session = (UserLogin)Session[WebsiteNoiThat.Common.Commoncontent.user_sesion];
             if (session == null)
@@ -864,20 +872,45 @@ namespace WebsiteNoiThat.Controllers
                 return RedirectToAction("Login", "RegisterAndLogin");
             }
 
-            if (ModelState.IsValid)
+            var existingUser = db.Users.Find(session.UserId);
+            if (existingUser == null || existingUser.UserId != user.UserId)
             {
-                var existingUser = db.Users.AsNoTracking().FirstOrDefault(n => n.UserId == user.UserId && n.UserId == session.UserId);
-                if (existingUser == null)
-                {
-                    return RedirectToAction("ViewCurentUser");
-                }
-
-                user.Password = existingUser.Password;
-                db.Entry(user).State = EntityState.Modified;
-                db.SaveChanges();
                 return RedirectToAction("ViewCurentUser");
             }
-            return View(user);
+
+            if (DeleteAvatar == true)
+            {
+                if (!string.IsNullOrEmpty(existingUser.Avatar))
+                {
+                    var path = Server.MapPath("~/image/" + existingUser.Avatar);
+                    if (System.IO.File.Exists(path)) System.IO.File.Delete(path);
+                    existingUser.Avatar = null;
+                }
+            }
+            else if (UploadAvatar != null && UploadAvatar.ContentLength > 0)
+            {
+                if (!string.IsNullOrEmpty(existingUser.Avatar))
+                {
+                    var oldPath = Server.MapPath("~/image/" + existingUser.Avatar);
+                    if (System.IO.File.Exists(oldPath)) System.IO.File.Delete(oldPath);
+                }
+
+                string fileName = Guid.NewGuid().ToString("N") + Path.GetExtension(UploadAvatar.FileName);
+                string folder = Server.MapPath("~/image/");
+                if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
+                UploadAvatar.SaveAs(Path.Combine(folder, fileName));
+                existingUser.Avatar = fileName;
+            }
+
+            existingUser.Name = user.Name;
+            existingUser.Address = user.Address;
+            existingUser.Phone = user.Phone;
+            existingUser.Username = user.Username;
+            existingUser.Email = user.Email;
+            existingUser.Status = user.Status;
+            
+            db.SaveChanges();
+            return RedirectToAction("ViewCurentUser");
         }
 
         // ==================== 6. ĐỔI MẬT KHẨU ====================
@@ -1012,6 +1045,8 @@ namespace WebsiteNoiThat.Controllers
             var session = (UserLogin)Session[WebsiteNoiThat.Common.Commoncontent.user_sesion];
             if (session != null)
             {
+                var user = db.Users.Find(session.UserId);
+                
                 var model = db.Cards.SingleOrDefault(n => n.UserId == session.UserId);
                 var models = (from a in db.OrderDetails
                               join b in db.Orders on a.OrderId equals b.OrderId
@@ -1048,6 +1083,7 @@ namespace WebsiteNoiThat.Controllers
                         ViewBag.Card = model.NumberCard;
                     }
                 }
+                return PartialView(user);
             }
             return PartialView();
         }

@@ -30,9 +30,13 @@ namespace WebsiteNoiThat
                 using (var db = new DBNoiThat())
                 {
                     // Tự động bổ sung cột PaymentMethod nếu thiếu (Issue #67)
-                    var checkSql = "IF COL_LENGTH('[Order]', 'PaymentMethod') IS NULL " +
+                    var checkSqlOrder = "IF COL_LENGTH('[Order]', 'PaymentMethod') IS NULL " +
                                    "ALTER TABLE [Order] ADD PaymentMethod NVARCHAR(50) NULL";
-                    db.Database.ExecuteSqlCommand(checkSql);
+                    db.Database.ExecuteSqlCommand(checkSqlOrder);
+
+                    var checkSqlUser = "IF COL_LENGTH('[User]', 'Avatar') IS NULL " +
+                                       "ALTER TABLE [User] ADD Avatar NVARCHAR(250) NULL";
+                    db.Database.ExecuteSqlCommand(checkSqlUser);
                 }
             }
             catch (Exception ex)
